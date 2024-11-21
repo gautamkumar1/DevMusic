@@ -1,0 +1,69 @@
+const User = require("../models/auth-model");
+const { uploadOnCloudinary } = require("../utils/cloudinary");
+const register = async (req, res) => {
+    try {
+        const {username, email, password,bio,isBlocked,isAdmin} = req.body;
+        if(username.length < 3){
+            return res.status(400).json({message: "Username must be at least 3 characters"});
+        }
+        if(password.length < 6){
+            return res.status(400).json({message: "Password must be at least 6 characters"});
+        }
+        if(email.length < 3){
+            return res.status(400).json({message: "Email must be at least 3 characters"});
+        }
+        if(!email.includes("@") || !email.includes(".")){
+            return res.status(400).json({message: "Invalid email"});
+        }
+        if(!username || !email || !password){
+            return res.status(400).json({message: "All fields are required"});
+        }
+        const isUserExist = await User.findOne({email});
+        if(isUserExist){
+            return res.status(400).json({message: "User already exist"});
+        }
+        let profile_picturePath;
+
+        if (
+          req.files &&
+          Array.isArray(req.files.profile_picture) &&
+          req.files.profile_picture.length > 0
+        ) {
+            profile_picturePath = req.files.profile_picture[0].path;
+        }
+        console.log(`profile_picturePath: ${profile_picturePath}`);
+        const profile_pictureUpload = await uploadOnCloudinary(profile_picturePath);
+        
+        const newUser = await User.create({username, email, password,bio,isBlocked,isAdmin,profile_picture: profile_pictureUpload || 'https://via.placeholder.com/300x300'});
+        const jwtToken = await newUser.generateToken();
+        return res.status(200).json({message: "User registered successfully", userData: newUser, token: jwtToken});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+const login = async (req, res) => {
+    try {
+        console.log(req.body);
+        
+        const {email, password} = req.body;
+        if(!email || !password){
+            return res.status(400).json({message: "All fields are required"});
+        }
+        const user = await User.findOne({email});
+        if(!user){
+            return res.status(400).json({message: "User does not exist"});
+        }
+        const isPasswordMatch = await user.comparePassword(password);
+        if(!isPasswordMatch){
+            return res.status(400).json({message: "Invalid password"});
+        }
+        const jwtToken = await user.generateToken();
+        return res.status(200).json({message: "User logged in successfully", userData: user, token: jwtToken});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+module.exports = {register,login};
