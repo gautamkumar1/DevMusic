@@ -18,6 +18,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "avatars.githubusercontent.com", // Added for GitHub avatars
       },
+      {
+        protocol: "https",
+        hostname: "assets.aceternity.com", // Added for Aceternity assets
+      },
     ],
   },
 };
