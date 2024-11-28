@@ -2,6 +2,7 @@ import { FeatureSection } from "@/components/FeatureSection";
 import { FooterSection } from "@/components/layout/sections/footer";
 import { HeroSection } from "@/components/layout/sections/hero";
 import Playlist  from "@/components/Playlist";
+import AccordionExample from "./faq/page";
 
 
 export const metadata = {
@@ -38,6 +39,7 @@ export default function Home() {
       <HeroSection />
       <Playlist />
       <FeatureSection/>
+      <AccordionExample />
       <FooterSection />
     </>
   );
