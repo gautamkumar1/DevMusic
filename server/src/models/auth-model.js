@@ -32,6 +32,21 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    skills:{
+        type: [String],
+    },
+    role:{
+        type: String,
+    },
+    githubLink:{
+        type: String
+    },
+    linkedInLink:{
+        type: String
+    },
+    portfolioLink:{
+        type: String
+    }
     
 },
 {timestamps: true}
