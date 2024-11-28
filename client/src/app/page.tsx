@@ -1,6 +1,7 @@
 import { FeatureSection } from "@/components/FeatureSection";
 import { FooterSection } from "@/components/layout/sections/footer";
 import { HeroSection } from "@/components/layout/sections/hero";
+import Playlist  from "@/components/Playlist";
 
 
 export const metadata = {
@@ -35,6 +36,7 @@ export default function Home() {
   return (
     <>
       <HeroSection />
+      <Playlist />
       <FeatureSection/>
       <FooterSection />
     </>
