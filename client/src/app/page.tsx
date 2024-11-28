@@ -1,8 +1,9 @@
-import { FeatureSection } from "@/components/FeatureSection";
 import { FooterSection } from "@/components/layout/sections/footer";
 import { HeroSection } from "@/components/layout/sections/hero";
 import Playlist  from "@/components/Playlist";
 import AccordionExample from "./faq/page";
+import  Testimonials  from "./testimonials/page";
+import FeatureSection from "./features/page";
 
 
 export const metadata = {
@@ -38,8 +39,9 @@ export default function Home() {
     <>
       <HeroSection />
       <Playlist />
-      <FeatureSection/>
+      <FeatureSection />
       <AccordionExample />
+      <Testimonials />
       <FooterSection />
     </>
   );

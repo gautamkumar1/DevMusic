@@ -18,7 +18,7 @@ import {
   IconUserSearch,
 } from "@tabler/icons-react";
 
-export function FeatureSection() {
+function FeatureSection() {
   const features = [
     {
       title: "Code-Friendly Soundscapes",
@@ -64,7 +64,7 @@ export function FeatureSection() {
 
   return (
     <div>
-      <h4 className="text-3xl lg:text-5xl lg:leading-tight max-w-5xl mx-auto text-center tracking-tight font-semibold text-neutral-800 dark:text-neutral-200">
+      <h4 className="m-10 text-3xl lg:text-5xl lg:leading-tight max-w-5xl mx-auto text-center tracking-tight font-semibold text-neutral-800 dark:text-neutral-200">
   Built for Coders, Powered by DevMusic
 </h4>
 
@@ -122,3 +122,5 @@ const Feature = ({
     </div>
   );
 };
+
+export default FeatureSection;
