@@ -34,10 +34,12 @@ export const HeroSection = () => {
           </p>
 
           <div className="space-y-4 md:space-y-0 md:space-x-4">
+            <Link href={"/login"} target="_blank">
             <Button className="w-5/6 md:w-1/4 font-bold group/arrow">
               Get Started
               <ArrowRight className="size-5 ml-2 group-hover/arrow:translate-x-1 transition-transform" />
             </Button>
+            </Link>
 
             <Button
               asChild
@@ -45,7 +47,7 @@ export const HeroSection = () => {
               className="w-5/6 md:w-1/4 font-bold"
             >
               <Link
-                href="https://github.com/gautamkumar1/DevMusic"
+                href={"https://github.com/gautamkumar1/DevMusic"}
                 target="_blank"
               >
                 Github
