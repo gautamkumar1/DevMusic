@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -13,7 +13,11 @@ import { Badge } from "@/components/ui/badge"
 export default function RegisterPage() {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([])
   const [skillInput, setSkillInput] = useState('')
+  const fileInputRef:any = useRef(null);
 
+  const handleUploadClick = () => {
+    fileInputRef.current.click();
+  };
   const skills = [
     'JavaScript', 'TypeScript', 'React', 'Node.js', 'Python',
     'Music Production', 'Audio Engineering', 'Sound Design',
@@ -84,28 +88,27 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="profile" className="text-gray-200">
-                Profile Picture
-              </Label>
-              <div className="flex items-center justify-center border-2 border-dashed border-white/10 rounded-lg p-6 bg-white/5">
-                <div className="text-center">
-                  <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                  <div className="mt-2">
-                    <Button variant="secondary" size="sm">
-                      Upload Photo
-                    </Button>
-                    <input
-                      id="fileInput"
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
+      <Label htmlFor="profile" className="text-gray-200">
+        Profile Picture
+      </Label>
+      <div className="flex items-center justify-center border-2 border-dashed border-white/10 rounded-lg p-6 bg-white/5">
+        <div className="text-center">
+          <Upload className="mx-auto h-12 w-12 text-gray-400" />
+          <div className="mt-2">
+            <Button variant="secondary" size="sm" onClick={handleUploadClick}>
+              Upload Photo
+            </Button>
+            <input
+              ref={fileInputRef}
+              id="fileInput"
+              type="file"
+              className="hidden"
+              accept="image/*"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
             <div className="space-y-2">
               <Label className="text-gray-200">Skills</Label>
               <div className="flex flex-wrap gap-2 mb-2">
