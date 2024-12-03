@@ -4,6 +4,7 @@ import Playlist  from "@/components/Playlist";
 import AccordionExample from "./faq/page";
 import  Testimonials  from "./testimonials/page";
 import FeatureSection from "./features/page";
+import { Navbar } from "@/components/layout/navbar";
 
 
 export const metadata = {
@@ -37,6 +38,7 @@ export const metadata = {
 export default function Home() {
   return (
     <>
+      <Navbar />
       <HeroSection />
       <Playlist />
       <FeatureSection />

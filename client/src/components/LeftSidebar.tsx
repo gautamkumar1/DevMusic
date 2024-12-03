@@ -58,6 +58,33 @@ const LeftSidebar = () => {
             <MessageCircle className="mr-2 w-5 h-5" />
             <span className="hidden md:inline">Messages</span>
           </Link>
+
+          {/* New Links: Create Room and Live Coding */}
+          <Link
+            href="/create-room"
+            className={cn(
+              buttonVariants({
+                variant: "ghost",
+                className: "w-full justify-start text-white hover:bg-zinc-800",
+              })
+            )}
+          >
+            <span className="mr-2 w-5 h-5">🛠️</span> {/* Optional: Add an icon here */}
+            <span className="hidden md:inline">Create Room</span>
+          </Link>
+
+          <Link
+            href="/live-coding"
+            className={cn(
+              buttonVariants({
+                variant: "ghost",
+                className: "w-full justify-start text-white hover:bg-zinc-800",
+              })
+            )}
+          >
+            <span className="mr-2 w-5 h-5">🎥</span> {/* Optional: Add an icon here */}
+            <span className="hidden md:inline">Live Coding</span>
+          </Link>
         </div>
       </div>
 
