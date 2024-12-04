@@ -6,34 +6,65 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MusicIcon, Upload } from 'lucide-react'
+import { Loader2, MusicIcon, Upload } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
-
+import useUserStore from '@/store/useUserStore'
 export default function RegisterPage() {
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([])
-  const [skillInput, setSkillInput] = useState('')
-  const fileInputRef:any = useRef(null);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [skillInput, setSkillInput] = useState('');
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    bio: "",
+    role: "",
+    githubLink: "",
+    linkedInLink: "",
+    portfolioLink: "",
+    skills: "" as string | string[],
+  });
+  const fileInputRef = useRef<any>(null);
+  const [profile_picture, setProfileImage] = useState<File | null>(null);
+  const { isLoading,registerUser } = useUserStore();
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
 
   const handleUploadClick = () => {
     fileInputRef.current.click();
   };
-  const skills = [
-    'JavaScript', 'TypeScript', 'React', 'Node.js', 'Python',
-    'Music Production', 'Audio Engineering', 'Sound Design',
-    'AWS', 'Docker', 'Git', 'CI/CD'
-  ]
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setProfileImage(e.target.files[0]);
+    }
+  };
 
   const handleAddSkill = () => {
     if (skillInput && !selectedSkills.includes(skillInput)) {
-      setSelectedSkills([...selectedSkills, skillInput])
-      setSkillInput('')
+      setSelectedSkills([...selectedSkills, skillInput]);
+      setSkillInput('');
     }
-  }
+  };
 
   const handleRemoveSkill = (skill: string) => {
-    setSelectedSkills(selectedSkills.filter(s => s !== skill))
-  }
+    setSelectedSkills(selectedSkills.filter((s) => s !== skill));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const updatedFormData = { ...formData, skills: Array.isArray(formData.skills) ? formData.skills : [] };
+    updatedFormData.skills = selectedSkills;
+    console.log(`updatedFormData: ${JSON.stringify(updatedFormData)}`);
+    
+    await registerUser(updatedFormData,profile_picture);
+  };
+
+  const skills = [
+    'JavaScript', 'TypeScript', 'React', 'Node.js', 'Python',
+    'Music Production', 'Audio Engineering', 'Sound Design',
+    'AWS', 'Docker', 'Git', 'CI/CD',
+  ];
 
   return (
     <div className="mt-15 min-h-screen bg-gradient-to-br from-orange-900 via-gray-900 to-black p-4 md:p-6 lg:p-8">
@@ -55,6 +86,8 @@ export default function RegisterPage() {
                 <Input
                   id="username"
                   placeholder="gautam.x3"
+                  value={formData.username}
+                  onChange={handleInputChange}
                   className="bg-white/5 border-white/10 text-white placeholder:text-gray-400"
                 />
               </div>
@@ -64,6 +97,8 @@ export default function RegisterPage() {
                   id="email"
                   type="email"
                   placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={handleInputChange}
                   className="bg-white/5 border-white/10 text-white placeholder:text-gray-400"
                 />
               </div>
@@ -74,6 +109,8 @@ export default function RegisterPage() {
               <Input
                 id="password"
                 type="password"
+                value={formData.password}
+                onChange={handleInputChange}
                 className="bg-white/5 border-white/10 text-white"
               />
             </div>
@@ -83,32 +120,34 @@ export default function RegisterPage() {
               <Textarea
                 id="bio"
                 placeholder="Tell us about your musical journey and coding expertise..."
+                value={formData.bio}
+                onChange={handleInputChange}
                 className="bg-white/5 border-white/10 text-white placeholder:text-gray-400 min-h-[100px]"
               />
             </div>
 
             <div className="space-y-2">
-      <Label htmlFor="profile" className="text-gray-200">
-        Profile Picture
-      </Label>
-      <div className="flex items-center justify-center border-2 border-dashed border-white/10 rounded-lg p-6 bg-white/5">
-        <div className="text-center">
-          <Upload className="mx-auto h-12 w-12 text-gray-400" />
-          <div className="mt-2">
-            <Button variant="secondary" size="sm" onClick={handleUploadClick}>
-              Upload Photo
-            </Button>
-            <input
-              ref={fileInputRef}
-              id="fileInput"
-              type="file"
-              className="hidden"
-              accept="image/*"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+              <Label htmlFor="profile" className="text-gray-200">Profile Picture</Label>
+              <div className="flex items-center justify-center border-2 border-dashed border-white/10 rounded-lg p-6 bg-white/5">
+                <div className="text-center">
+                  <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                  <div className="mt-2">
+                    <Button variant="secondary" size="sm" onClick={handleUploadClick}>
+                      Upload Photo
+                    </Button>
+                    <input
+                      ref={fileInputRef}
+                      id="fileInput"
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label className="text-gray-200">Skills</Label>
               <div className="flex flex-wrap gap-2 mb-2">
@@ -145,44 +184,53 @@ export default function RegisterPage() {
               <Input
                 id="role"
                 placeholder="Full Stack Developer"
+                value={formData.role}
+                onChange={handleInputChange}
                 className="bg-white/5 border-white/10 text-white placeholder:text-gray-400"
               />
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="github" className="text-gray-200">GitHub Profile</Label>
+                <Label htmlFor="githubLink" className="text-gray-200">GitHub Profile</Label>
                 <Input
-                  id="github"
+                  id="githubLink"
                   placeholder="https://github.com/username"
+                  value={formData.githubLink}
+                  onChange={handleInputChange}
                   className="bg-white/5 border-white/10 text-white placeholder:text-gray-400"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="linkedin" className="text-gray-200">LinkedIn Profile</Label>
+                <Label htmlFor="linkedInLink" className="text-gray-200">LinkedIn Profile</Label>
                 <Input
-                  id="linkedin"
+                  id="linkedInLink"
                   placeholder="https://linkedin.com/username"
+                  value={formData.linkedInLink}
+                  onChange={handleInputChange}
                   className="bg-white/5 border-white/10 text-white placeholder:text-gray-400"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="portfolio" className="text-gray-200">Portfolio Website</Label>
+                <Label htmlFor="portfolioLink" className="text-gray-200">Portfolio Website</Label>
                 <Input
-                  id="portfolio"
+                  id="portfolioLink"
                   placeholder="https://yourportfolio.com"
+                  value={formData.portfolioLink}
+                  onChange={handleInputChange}
                   className="bg-white/5 border-white/10 text-white placeholder:text-gray-400"
                 />
               </div>
             </div>
 
-            <Button className="w-full" size="lg">
-              Create Account
+            <Button className="w-full" size="lg" onClick={handleSubmit}>
+              {isLoading ? <Loader2 className="animate-spin" /> : "Register"}
             </Button>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }
+
 

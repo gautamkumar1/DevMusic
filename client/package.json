@@ -35,9 +35,11 @@
     "react-dom": "^18",
     "react-hook-form": "^7.52.2",
     "react-resizable-panels": "^2.1.7",
+    "sonner": "^1.7.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",

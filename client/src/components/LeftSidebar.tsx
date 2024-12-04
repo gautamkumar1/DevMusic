@@ -59,7 +59,7 @@ const LeftSidebar = () => {
             <span className="hidden md:inline">Messages</span>
           </Link>
 
-          {/* New Links: Create Room and Live Coding */}
+          {/* Create Room */}
           <Link
             href="/create-room"
             className={cn(
@@ -69,10 +69,11 @@ const LeftSidebar = () => {
               })
             )}
           >
-            <span className="mr-2 w-5 h-5">🛠️</span> {/* Optional: Add an icon here */}
+            <span className="mr-2 w-5 h-5">🛠️</span>
             <span className="hidden md:inline">Create Room</span>
           </Link>
 
+          {/* Live Coding */}
           <Link
             href="/live-coding"
             className={cn(
@@ -82,8 +83,36 @@ const LeftSidebar = () => {
               })
             )}
           >
-            <span className="mr-2 w-5 h-5">🎥</span> {/* Optional: Add an icon here */}
+            <span className="mr-2 w-5 h-5">🎥</span>
             <span className="hidden md:inline">Live Coding</span>
+          </Link>
+
+          {/* View Profile */}
+          <Link
+            href="/profile"
+            className={cn(
+              buttonVariants({
+                variant: "ghost",
+                className: "w-full justify-start text-white hover:bg-zinc-800",
+              })
+            )}
+          >
+            <span className="mr-2 w-5 h-5">👤</span>
+            <span className="hidden md:inline">View Profile</span>
+          </Link>
+
+          {/* Logout */}
+          <Link
+            href="/logout"
+            className={cn(
+              buttonVariants({
+                variant: "ghost",
+                className: "w-full justify-start text-white hover:bg-zinc-800",
+              })
+            )}
+          >
+            <span className="mr-2 w-5 h-5">🚪</span>
+            <span className="hidden md:inline">Logout</span>
           </Link>
         </div>
       </div>

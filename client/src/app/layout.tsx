@@ -2,20 +2,22 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-// import { Navbar } from "@/components/layout/navbar";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { Toaster } from "sonner"; // Import Sonner's Toaster
+
 const inter = Inter({ subsets: ["latin"] });
 
+// Metadata configuration for SEO
 export const metadata: Metadata = {
-  title: "DevMusic - Music Website for developers",
+  title: "DevMusic - Music Website for Developers",
   description: "Code with Beats",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="pt-br" suppressHydrationWarning>
       <body className={cn("min-h-screen bg-background", inter.className)}>
@@ -25,8 +27,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          {/* Add Sonner Toaster for global toast notifications */}
+          <Toaster position="top-right" richColors />
           
-          {children}
+          {/* Main application content */}
+          <main className="flex flex-col min-h-screen">
+            {children}
+          </main>
         </ThemeProvider>
       </body>
     </html>
