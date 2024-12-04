@@ -4,6 +4,7 @@ import { Header } from "./components/header";
 import { PlaylistDetails } from "./components/playlist-details";
 import { TrendingPlaylists } from "./components/trending-playlists";
 import { useState } from "react";
+import PrivateRoute from "@/components/PrivateRoute";
 interface Song {
   id: number
   title: string
@@ -46,9 +47,12 @@ const Home = () => {
 
 const HomePage = () => {
   return (
-    <MainLayout>
+    <PrivateRoute>
+      <MainLayout>
       <Home/>
     </MainLayout>
+    </PrivateRoute>
+   
   );
 };
 
