@@ -1,10 +1,35 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { MusicIcon} from 'lucide-react'
+import useUserStore from "@/store/useUserStore"
+import { Loader2, MusicIcon} from 'lucide-react'
 import Link from "next/link";
+import { useEffect, useState } from "react"
+import { useRouter } from 'next/navigation'
+
 export default function LoginPage() {
+  
+  const router = useRouter()
+  const [loginData,setLoginData] = useState({
+    email: "",
+    password: "",
+  });
+  const {isLoading,success,loginUser} = useUserStore();
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await loginUser(loginData);
+  }
+  useEffect(() => {
+    if(success){
+      router.push("/home")
+    }
+  }, [success])
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setLoginData({ ...loginData, [e.target.id]: e.target.value });
+  };
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-900 via-gray-900 to-black flex items-center justify-center p-4 md:p-6 lg:p-8">
         <div className="w-full max-w-4xl flex flex-col items-center">
@@ -25,6 +50,8 @@ export default function LoginPage() {
                   <Input
                     id="email"
                     type="email"
+                    value={loginData.email}
+                    onChange={handleInputChange}
                     placeholder="you@example.com"
                     className="bg-white/5 border-white/10 text-white placeholder:text-gray-400"
                   />
@@ -34,12 +61,14 @@ export default function LoginPage() {
                   <Input
                     id="password"
                     type="password"
+                    value={loginData.password}
+                    onChange={handleInputChange}
                     placeholder="Enter your password"
                     className="bg-white/5 border-white/10 text-white placeholder:text-gray-400"
                   />
                 </div>
               </div>
-              <Button className="w-full" size="lg">Log In</Button>
+              <Button className="w-full" size="lg" onClick={handleLogin}>{isLoading ? <Loader2 className="animate-spin" /> : "Log In"}</Button>
               <p className="text-gray-300 text-center mt-4">
                 New here?
                 <Link href={"/register"} target="_blank" className="text-blue-400 underline">Sign up now</Link>

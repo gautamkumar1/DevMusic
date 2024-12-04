@@ -1,3 +1,4 @@
+
 import { toast } from 'sonner';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -13,22 +14,31 @@ interface UserFormData {
   portfolioLink: string;
   skills: string[];  // Changed from "" to string[]
 }
+interface UserLoginData {
+  email: string;
+  password: string;
+  
+}
 
 interface UserStore {
   isLoading: boolean;
   error: string | null;
   success: boolean;
+  isLoggedIn: boolean;
   registerUser: (formData: UserFormData, profile_picture?: File | null) => Promise<void>;
+  loginUser: (loginData: UserLoginData) => Promise<void>;
   clearState: () => void;
 }
 
 const useUserStore = create<UserStore>()(
+  
   persist(
     (set) => ({
       isLoading: false,
       error: null,
       success: false,
-
+      isLoggedIn: !!localStorage.getItem("token"),
+      
       registerUser: async (formData, profile_picture) => {
         set({ isLoading: true, error: null, success: false });
         try {
@@ -55,7 +65,6 @@ const useUserStore = create<UserStore>()(
           if (response.ok) {
             set({ success: true, isLoading: false });
             const result = await response.json();
-            localStorage.setItem("token", result.token);
             toast.success(result.message);
             
           } else {
@@ -70,12 +79,41 @@ const useUserStore = create<UserStore>()(
             console.error("Error during registration. Please try again.", err);
         }
       },
-
-      clearState: () => set({ isLoading: false, error: null, success: false }),
+      
+      loginUser: async (loginData) => {
+        set({ isLoading: true, error: null, success: false, isLoggedIn: false });
+        try {
+          const response = await fetch("http://localhost:3001/api/user/login", {
+            method: "POST",
+            body: JSON.stringify(loginData),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+      
+          if (response.ok) {
+            const result = await response.json();
+            set({ success: true, isLoading: false, isLoggedIn: true });
+            localStorage.setItem("token", result.token);
+            toast.success(result.message);
+          } else {
+            const error = await response.json();
+            set({ error: error.message, isLoading: false, isLoggedIn: false });
+            toast.warning(error.message);
+            console.log(`Error: ${error.message}`);
+          }
+        } catch (err) {
+          set({ error: "Error during login. Please try again.", isLoading: false, isLoggedIn: false });
+          toast.error("Error during login. Please try again.");
+          console.error("Error during login. Please try again.", err);
+        }
+      },
+      
+      clearState: () => set({ isLoading: false, error: null, success: false, isLoggedIn: false }),
     }),
     {
       name: "user-store", // Name of the persisted storage
-      partialize: (state) => ({ isLoading: state.isLoading, error: state.error, success: state.success }),
+      partialize: (state) => ({ isLoading: state.isLoading, error: state.error, success: state.success,isLoggedIn: state.isLoggedIn }),
     }
   )
 );

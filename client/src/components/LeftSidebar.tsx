@@ -4,9 +4,21 @@ import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "./ui/scroll-area";
+import useUserStore from "@/store/useUserStore";
+import { toast } from "sonner";
+import { useRouter } from 'next/navigation'
+
 
 const LeftSidebar = () => {
-  // Hardcoded album data
+  const router = useRouter()
+  const { isLoggedIn } = useUserStore(); 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    useUserStore.getState().clearState();
+    toast.success("Logout successful!");
+    router.push("/")
+  };
+
   const albums = [
     {
       _id: "1",
@@ -33,6 +45,7 @@ const LeftSidebar = () => {
       {/* Navigation menu */}
       <div className="rounded-lg bg-zinc-900 p-4">
         <div className="space-y-2">
+          {/* Always show Home */}
           <Link
             href="/"
             className={cn(
@@ -46,74 +59,80 @@ const LeftSidebar = () => {
             <span className="hidden md:inline">Home</span>
           </Link>
 
-          <Link
-            href="/chat"
-            className={cn(
-              buttonVariants({
-                variant: "ghost",
-                className: "w-full justify-start text-white hover:bg-zinc-800",
-              })
-            )}
-          >
-            <MessageCircle className="mr-2 w-5 h-5" />
-            <span className="hidden md:inline">Messages</span>
-          </Link>
+          {/* Conditional rendering for logged-in state */}
+          {isLoggedIn && (
+            <>
+              {/* Messages */}
+              <Link
+                href="/chat"
+                className={cn(
+                  buttonVariants({
+                    variant: "ghost",
+                    className: "w-full justify-start text-white hover:bg-zinc-800",
+                  })
+                )}
+              >
+                <MessageCircle className="mr-2 w-5 h-5" />
+                <span className="hidden md:inline">Messages</span>
+              </Link>
 
-          {/* Create Room */}
-          <Link
-            href="/create-room"
-            className={cn(
-              buttonVariants({
-                variant: "ghost",
-                className: "w-full justify-start text-white hover:bg-zinc-800",
-              })
-            )}
-          >
-            <span className="mr-2 w-5 h-5">🛠️</span>
-            <span className="hidden md:inline">Create Room</span>
-          </Link>
+              {/* Create Room */}
+              <Link
+                href="/create-room"
+                className={cn(
+                  buttonVariants({
+                    variant: "ghost",
+                    className: "w-full justify-start text-white hover:bg-zinc-800",
+                  })
+                )}
+              >
+                <span className="mr-2 w-5 h-5">🛠️</span>
+                <span className="hidden md:inline">Create Room</span>
+              </Link>
 
-          {/* Live Coding */}
-          <Link
-            href="/live-coding"
-            className={cn(
-              buttonVariants({
-                variant: "ghost",
-                className: "w-full justify-start text-white hover:bg-zinc-800",
-              })
-            )}
-          >
-            <span className="mr-2 w-5 h-5">🎥</span>
-            <span className="hidden md:inline">Live Coding</span>
-          </Link>
+              {/* Live Coding */}
+              <Link
+                href="/live-coding"
+                className={cn(
+                  buttonVariants({
+                    variant: "ghost",
+                    className: "w-full justify-start text-white hover:bg-zinc-800",
+                  })
+                )}
+              >
+                <span className="mr-2 w-5 h-5">🎥</span>
+                <span className="hidden md:inline">Live Coding</span>
+              </Link>
 
-          {/* View Profile */}
-          <Link
-            href="/profile"
-            className={cn(
-              buttonVariants({
-                variant: "ghost",
-                className: "w-full justify-start text-white hover:bg-zinc-800",
-              })
-            )}
-          >
-            <span className="mr-2 w-5 h-5">👤</span>
-            <span className="hidden md:inline">View Profile</span>
-          </Link>
+              {/* View Profile */}
+              <Link
+                href="/profile"
+                className={cn(
+                  buttonVariants({
+                    variant: "ghost",
+                    className: "w-full justify-start text-white hover:bg-zinc-800",
+                  })
+                )}
+              >
+                <span className="mr-2 w-5 h-5">👤</span>
+                <span className="hidden md:inline">View Profile</span>
+              </Link>
 
-          {/* Logout */}
-          <Link
-            href="/logout"
-            className={cn(
-              buttonVariants({
-                variant: "ghost",
-                className: "w-full justify-start text-white hover:bg-zinc-800",
-              })
-            )}
-          >
-            <span className="mr-2 w-5 h-5">🚪</span>
-            <span className="hidden md:inline">Logout</span>
-          </Link>
+              {/* Logout */}
+              <button
+                onClick={handleLogout}
+                className={cn(
+                  buttonVariants({
+                    variant: "ghost",
+                    className: "w-full justify-start text-white hover:bg-zinc-800",
+                  })
+                )}
+              >
+                <span className="mr-2 w-5 h-5">🚪</span>
+                <span className="hidden md:inline">Logout</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
 
