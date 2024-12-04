@@ -1,6 +1,8 @@
 const User = require("../models/auth-model");
 const { uploadOnCloudinary } = require("../utils/cloudinary");
 const register = async (req, res) => {
+    console.log(`req.body: ${JSON.stringify(req.body)}`);
+    
     try {
         const {username, email, password,bio,isBlocked,isAdmin,skills,linkedInLink,portfolioLink,githubLink} = req.body;
         if(username.length < 3){

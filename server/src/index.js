@@ -7,6 +7,13 @@ const authRoutes = require("./routes/auth-routes");
 const albumRoutes = require("./routes/album-routes");
 const songRoutes = require("./routes/song-routes");
 const featuredRoutes = require("./routes/featured-routes");
+const cors = require("cors");
+app.use(cors({
+    origin: 'http://localhost:3000', // Frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+  }));
+  
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
