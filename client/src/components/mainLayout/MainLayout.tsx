@@ -38,7 +38,7 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   return (
     <div className="h-screen bg-black text-white flex flex-col">
       {/* Main Resizable Panel Group */}
-      <ResizablePanelGroup direction="horizontal" className="flex-1 flex h-full overflow-hidden p-2">
+      <ResizablePanelGroup direction="horizontal" className="flex-1 flex h-full overflow-auto p-2">
         {/* Audio Player at the Top */}
         {/* <AudioPlayer /> */}
 
@@ -82,7 +82,7 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
       </ResizablePanelGroup>
 
       {/* Playback Controls at the Bottom */}
-      <PlaybackControls />
+      {/* <PlaybackControls /> */}
     </div>
   );
 };

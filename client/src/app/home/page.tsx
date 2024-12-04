@@ -1,17 +1,56 @@
+"use client"
 import MainLayout from "@/components/mainLayout/MainLayout";
+import { Header } from "./components/header";
+import { PlaylistDetails } from "./components/playlist-details";
+import { TrendingPlaylists } from "./components/trending-playlists";
+import { useState } from "react";
+interface Song {
+  id: number
+  title: string
+  artist: string
+  duration: string
+}
 
+interface Playlist {
+  id: number
+  title: string
+  description: string
+  imageUrl: string
+  songs: Song[]
+}
 
 const Home = () => {
-    return <h1 className="flex items-center justify-center h-screen text-4xl ">Welcome to DevMusic!</h1>;
-  };
-  
-  // Wrap the page content with MainLayout
-  const HomePage = () => {
-    return (
-      <MainLayout>
-        <Home/>
-      </MainLayout>
-    );
-  };
+  const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null)
 
-  export default HomePage;
+  const handlePlaylistSelect = (playlist: Playlist) => {
+    setSelectedPlaylist(playlist)
+  }
+
+  const handleBackToTrending = () => {
+    setSelectedPlaylist(null)
+  }
+
+  return (
+    <div className="min-h-screen h-full bg-[#18181B] overflow-y-auto">
+      <Header />
+      <main>
+        {selectedPlaylist ? (
+          <PlaylistDetails playlist={selectedPlaylist} onBack={handleBackToTrending} />
+        ) : (
+          <TrendingPlaylists onPlaylistSelect={handlePlaylistSelect} />
+        )}
+      </main>
+    </div>
+  )
+}
+
+const HomePage = () => {
+  return (
+    <MainLayout>
+      <Home/>
+    </MainLayout>
+  );
+};
+
+export default HomePage;
+

@@ -1,7 +1,7 @@
 const User = require("../models/auth-model");
 const { uploadOnCloudinary } = require("../utils/cloudinary");
 const register = async (req, res) => {
-    console.log(`req.body: ${JSON.stringify(req.body)}`);
+    // console.log(`req.body: ${JSON.stringify(req.body)}`);
     
     try {
         const {username, email, password,bio,isBlocked,isAdmin,skills,linkedInLink,portfolioLink,githubLink} = req.body;
@@ -38,7 +38,7 @@ const register = async (req, res) => {
         
         const newUser = await User.create({username, email, password,bio,isBlocked,isAdmin,skills,profile_picture: profile_pictureUpload || 'https://via.placeholder.com/300x300',portfolioLink: portfolioLink || 'https://portfolio.com',githubLink: githubLink || 'https://github.com',linkedInLink: linkedInLink || 'https://linkedin.com'});
         const jwtToken = await newUser.generateToken();
-        return res.status(200).json({message: "User registered successfully", userData: newUser, token: jwtToken});
+        return res.status(200).json({message: "Registered successfully", userData: newUser, token: jwtToken});
     } catch (error) {
         console.log(error);
         return res.status(500).json({message: error.message});
@@ -62,7 +62,7 @@ const login = async (req, res) => {
             return res.status(400).json({message: "Invalid password"});
         }
         const jwtToken = await user.generateToken();
-        return res.status(200).json({message: "User logged in successfully", userData: user, token: jwtToken});
+        return res.status(200).json({message: "Logged in successfully", userData: user, token: jwtToken});
     } catch (error) {
         console.log(error);
         return res.status(500).json({message: error.message});
