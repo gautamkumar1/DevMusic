@@ -8,6 +8,10 @@ const albumRoutes = require("./routes/album-routes");
 const songRoutes = require("./routes/song-routes");
 const featuredRoutes = require("./routes/featured-routes");
 const cors = require("cors");
+const createServer = require('http').createServer;
+const initializeSocket = require('./socket/socket');
+const socketServer = createServer(app);
+initializeSocket(socketServer);
 app.use(cors({
     origin: 'http://localhost:3000', // Frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -28,4 +32,4 @@ app.use("/api", songRoutes);
 app.use("/api", featuredRoutes);
 const PORT = process.env.PORT || 3000;
 
-connectDb().then(() => app.listen(PORT, () => console.log(`Server is running on port ${PORT}`)));
+connectDb().then(() => socketServer.listen(PORT, () => console.log(`Server is running on port ${PORT}`)));
