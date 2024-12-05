@@ -68,4 +68,30 @@ const login = async (req, res) => {
         return res.status(500).json({message: error.message});
     }
 }
-module.exports = {register,login};
+
+const getSingleUser = async (req, res) => {
+    try {
+        const {userId} = req.params;
+        const user = await User.findById(userId).select("-password");
+        if(!user){
+            return res.status(400).json({message: "User does not exist"});
+        }
+        return res.status(200).json({message: "User fetched successfully", userData: user});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+        
+    }
+}
+// This is a admin route
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find().select("-password");
+        return res.status(200).json({message: "All users fetched successfully", userData: users});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+        
+    }
+}
+module.exports = {register,login,getSingleUser,getAllUsers};
