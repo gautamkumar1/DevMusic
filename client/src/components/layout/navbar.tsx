@@ -12,25 +12,19 @@ import {
 import { Separator } from "../ui/separator";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "../ui/navigation-menu";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { ToggleTheme } from "./toogle-theme";
-
 interface RouteProps {
   href: string;
   label: string;
 }
 
-interface FeatureProps {
-  title: string;
-  description: string;
-}
+
 
 const routeList: RouteProps[] = [
   {

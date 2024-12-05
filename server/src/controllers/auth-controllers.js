@@ -4,7 +4,7 @@ const register = async (req, res) => {
     // console.log(`req.body: ${JSON.stringify(req.body)}`);
     
     try {
-        const {username, email, password,bio,isBlocked,isAdmin,skills,linkedInLink,portfolioLink,githubLink} = req.body;
+        const {username, email, password,bio,isBlocked,isAdmin,skills,linkedInLink,portfolioLink,githubLink,role} = req.body;
         if(username.length < 3){
             return res.status(400).json({message: "Username must be at least 3 characters"});
         }
@@ -36,7 +36,7 @@ const register = async (req, res) => {
         console.log(`profile_picturePath: ${profile_picturePath}`);
         const profile_pictureUpload = await uploadOnCloudinary(profile_picturePath);
         
-        const newUser = await User.create({username, email, password,bio,isBlocked,isAdmin,skills,profile_picture: profile_pictureUpload || 'https://via.placeholder.com/300x300',portfolioLink: portfolioLink || 'https://portfolio.com',githubLink: githubLink || 'https://github.com',linkedInLink: linkedInLink || 'https://linkedin.com'});
+        const newUser = await User.create({username, email, password,bio,isBlocked,isAdmin,role,skills,profile_picture: profile_pictureUpload || 'https://via.placeholder.com/300x300',portfolioLink: portfolioLink || 'https://portfolio.com',githubLink: githubLink || 'https://github.com',linkedInLink: linkedInLink || 'https://linkedin.com'});
         const jwtToken = await newUser.generateToken();
         return res.status(200).json({message: "Registered successfully", userData: newUser, token: jwtToken});
     } catch (error) {

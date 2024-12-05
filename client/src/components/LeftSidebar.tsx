@@ -7,11 +7,13 @@ import { ScrollArea } from "./ui/scroll-area";
 import useUserStore from "@/store/useUserStore";
 import { toast } from "sonner";
 import { useRouter } from 'next/navigation'
-
+import { jwtDecode } from "jwt-decode";
 
 const LeftSidebar = () => {
   const router = useRouter()
   const { isLoggedIn } = useUserStore(); 
+  const token = localStorage.getItem("token");
+  const decodedToken = token ? jwtDecode<any>(token) : null;
   const handleLogout = () => {
     localStorage.removeItem("token");
     useUserStore.getState().clearState();
@@ -106,7 +108,7 @@ const LeftSidebar = () => {
 
               {/* View Profile */}
               <Link
-                href="/profile"
+                href={`/profile/${decodedToken.id}`}
                 className={cn(
                   buttonVariants({
                     variant: "ghost",

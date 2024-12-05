@@ -13,7 +13,7 @@ export default function Skills({ skills }: SkillsProps) {
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-2">
-          {skills.map((skill) => (
+          {skills?.map((skill) => (
             <Badge key={skill} variant="secondary">
               {skill}
             </Badge>
