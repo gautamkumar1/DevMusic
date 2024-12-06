@@ -1,4 +1,5 @@
 const User = require("../models/auth-model");
+const Message = require("../models/message-model")
 const { uploadOnCloudinary } = require("../utils/cloudinary");
 const register = async (req, res) => {
     // console.log(`req.body: ${JSON.stringify(req.body)}`);
@@ -94,4 +95,24 @@ const getAllUsers = async (req, res) => {
         
     }
 }
-module.exports = {register,login,getSingleUser,getAllUsers};
+
+const getMessage = async (req, res) => {
+    try {
+        const myId = req.user._id;
+        const {userId} = req.params;
+        
+		const messages = await Message.find({
+			$or: [
+				{ senderId: userId, receiverId: myId },
+				{ senderId: myId, receiverId: userId },
+			],
+		}).sort({ createdAt: 1 });
+        return res.status(200).json({message: "Messages fetched successfully", messages: messages});
+    } catch (error) {
+        console.log(`Error in getMessage: ${error}`);
+        return res.status(500).json({message: error.message});
+        
+    }
+}
+
+module.exports = {register,login,getSingleUser,getAllUsers,getMessage};
