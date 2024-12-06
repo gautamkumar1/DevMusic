@@ -98,7 +98,7 @@ const getAllUsers = async (req, res) => {
 
 const getMessage = async (req, res) => {
     try {
-        const myId = req.user._id;
+        const myId = req.user.id;
         const {userId} = req.params;
         
 		const messages = await Message.find({
