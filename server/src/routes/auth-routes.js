@@ -11,5 +11,5 @@ router.post("/user/register",upload.fields([        {
 
 router.post("/user/login", login);
 router.get("/user/:userId",isAuthenticated,getSingleUser)
-router.get("/allUsers",isAuthenticated,isAuthorized,getAllUsers)
+router.get("/allUsers",isAuthenticated,getAllUsers)
 module.exports = router;
