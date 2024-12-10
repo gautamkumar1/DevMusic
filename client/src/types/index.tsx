@@ -36,6 +36,8 @@ export interface Message {
 }
 
 export interface User {
+	username: any;
+	profile_picture: string | undefined;
 	_id: string;
 	clerkId: string;
 	fullName: string;
