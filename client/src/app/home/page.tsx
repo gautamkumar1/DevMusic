@@ -3,8 +3,10 @@ import MainLayout from "@/components/mainLayout/MainLayout";
 import { Header } from "./components/header";
 import { PlaylistDetails } from "./components/playlist-details";
 import { TrendingPlaylists } from "./components/trending-playlists";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PrivateRoute from "@/components/PrivateRoute";
+import { jwtDecode } from "jwt-decode";
+import { useChatStore } from "@/store/useChatStore";
 interface Song {
   id: number
   title: string
@@ -22,7 +24,18 @@ interface Playlist {
 
 const Home = () => {
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null)
-
+  const {
+    isConnected,
+    initSocket,
+  } = useChatStore();
+  const token = localStorage.getItem("token") || "";
+  const decodedToken = jwtDecode<any>(token) || null;
+// Initialize socket connection
+useEffect(() => {
+  if (decodedToken?.id && !isConnected) {
+    initSocket(decodedToken.id);
+  }
+}, [initSocket, isConnected]);
   const handlePlaylistSelect = (playlist: Playlist) => {
     setSelectedPlaylist(playlist)
   }
