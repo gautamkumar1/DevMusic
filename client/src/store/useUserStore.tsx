@@ -25,6 +25,7 @@ interface UserStore {
   error: string | null;
   success: boolean;
   isLoggedIn: boolean;
+  isAdmin: boolean;
   registerUser: (formData: UserFormData, profile_picture?: File | null) => Promise<void>;
   loginUser: (loginData: UserLoginData) => Promise<void>;
   clearState: () => void;
@@ -38,7 +39,7 @@ const useUserStore = create<UserStore>()(
       error: null,
       success: false,
       isLoggedIn: !!localStorage.getItem("token"),
-      
+      isAdmin: false,
       registerUser: async (formData, profile_picture) => {
         set({ isLoading: true, error: null, success: false });
         try {
@@ -93,7 +94,10 @@ const useUserStore = create<UserStore>()(
       
           if (response.ok) {
             const result = await response.json();
-            set({ success: true, isLoading: false, isLoggedIn: true });
+            const isAdmin = result.userData.isAdmin;
+            console.log(`isAdmin:?????? ${isAdmin}`);
+            
+            set({ success: true, isLoading: false, isLoggedIn: true,isAdmin: isAdmin });
             localStorage.setItem("token", result.token);
             toast.success(result.message);
           } else {
@@ -109,11 +113,11 @@ const useUserStore = create<UserStore>()(
         }
       },
       
-      clearState: () => set({ isLoading: false, error: null, success: false, isLoggedIn: false }),
+      clearState: () => set({ isLoading: false, error: null, success: false, isLoggedIn: false,isAdmin: false }),
     }),
     {
       name: "user-store", // Name of the persisted storage
-      partialize: (state) => ({ isLoading: state.isLoading, error: state.error, success: state.success,isLoggedIn: state.isLoggedIn }),
+      partialize: (state) => ({ isLoading: state.isLoading, error: state.error, success: state.success,isLoggedIn: state.isLoggedIn,isAdmin: state.isAdmin }),
     }
   )
 );
