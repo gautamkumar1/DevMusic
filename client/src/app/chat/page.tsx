@@ -7,6 +7,8 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import MessageInput from "./components/MessageInput";
 import { useChatStore } from "@/store/useChatStore";
 import { jwtDecode } from "jwt-decode";
+import PrivateRoute from "@/components/PrivateRoute";
+import MainLayout from "@/components/mainLayout/MainLayout";
 
 const formatTime = (date: string) => {
   return new Date(date).toLocaleTimeString("en-US", {
@@ -16,7 +18,7 @@ const formatTime = (date: string) => {
   });
 };
 
-const ChatPage = () => {
+const Chat = () => {
   const {
     messages,
     selectedUser,
@@ -125,8 +127,16 @@ const ChatPage = () => {
   );
 };
 
-export default ChatPage;
-
+const ChatPage = () =>{
+  return (
+    <PrivateRoute>
+      <MainLayout>
+      <Chat />
+    </MainLayout>
+    </PrivateRoute>
+  )
+}
+export default ChatPage
 const NoConversationPlaceholder = () => (
   <div className="flex flex-col items-center justify-center h-full space-y-6">
     <img src="/spotify.png" alt="Spotify" className="h-16 w-16 animate-bounce" />
