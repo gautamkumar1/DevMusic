@@ -139,7 +139,7 @@ const ChatPage = () =>{
 export default ChatPage
 const NoConversationPlaceholder = () => (
   <div className="flex flex-col items-center justify-center h-full space-y-6">
-    <img src="/spotify.png" alt="Spotify" className="h-16 w-16 animate-bounce" />
+    {/* <img src="/nomusic.png" alt="DevMusic" className="h-16 w-16 animate-bounce" /> */}
     <div className="text-center">
       <h3 className="text-zinc-300 text-lg font-medium mb-1">No conversation selected</h3>
       <p className="text-zinc-500 text-sm">Choose a friend to start chatting</p>
