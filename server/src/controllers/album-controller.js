@@ -52,7 +52,8 @@ const deleteAlbum = async (req, res) => {
 const getAllAlbums = async (req, res) => {
 	try {
 		const albums = await albumModel.find();
-		res.status(200).json(albums);
+        const totalAlbums = albums.length;
+		res.status(200).json({totalAlbums:totalAlbums,albums:albums});
 	} catch (error) {
         console.log("Error in getAllAlbums", error);
         return res.status(500).json({ message: error.message });
