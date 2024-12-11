@@ -24,11 +24,15 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "avatars.githubusercontent.com", // Added for GitHub avatars
+        hostname: "avatars.githubusercontent.com",
       },
       {
         protocol: "https",
-        hostname: "assets.aceternity.com", // Added for Aceternity assets
+        hostname: "assets.aceternity.com",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com", // Add this line for Cloudinary
       },
     ],
   },

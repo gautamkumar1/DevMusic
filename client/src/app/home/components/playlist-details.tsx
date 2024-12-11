@@ -31,6 +31,7 @@ export function PlaylistDetails({ playlist, onBack }: PlaylistDetailsProps) {
         </button>
         <div className="flex flex-col md:flex-row items-start md:items-center mb-8">
           <Image
+          unoptimized
             src={playlist.imageUrl}
             alt={playlist.title}
             width={300}
