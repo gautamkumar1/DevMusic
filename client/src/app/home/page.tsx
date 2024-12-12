@@ -1,12 +1,12 @@
 "use client"
 import MainLayout from "@/components/mainLayout/MainLayout";
 import { Header } from "./components/header";
-import { PlaylistDetails } from "./components/playlist-details";
 import { TrendingPlaylists } from "./components/trending-playlists";
 import { useEffect, useState } from "react";
 import PrivateRoute from "@/components/PrivateRoute";
 import { jwtDecode } from "jwt-decode";
 import { useChatStore } from "@/store/useChatStore";
+import PlaylistDetails from "./components/playlist-details";
 interface Song {
   id: number
   title: string
@@ -16,6 +16,7 @@ interface Song {
 
 interface Playlist {
   id: number
+  _id: string
   title: string
   description: string
   imageUrl: string

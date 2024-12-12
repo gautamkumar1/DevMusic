@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import Image from 'next/image';
 import useAlbumStore from '@/store/useAlbumStore';
+import { Loader2 } from 'lucide-react';
 
 interface TrendingPlaylistsProps {
   onPlaylistSelect: (album: any) => void; // Adjusted type for album
@@ -14,7 +15,7 @@ export function TrendingPlaylists({ onPlaylistSelect }: TrendingPlaylistsProps) 
     fetchAlbums();
   }, [fetchAlbums]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="flex justify-center items-center h-screen"><Loader2 className="animate-spin" /></div>;
   if (error) return <div>Error: {error}</div>;
 
   return (

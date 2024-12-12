@@ -6,6 +6,7 @@ import ContactInfo from "../components/ContactInfo";
 import ProfileHeader from "../components/ProfileHeader";
 import Skills from "../components/Skills";
 import { Loader2 } from "lucide-react";
+import MainLayout from "@/components/mainLayout/MainLayout";
 
 type Params = {
   userId: string;
@@ -33,7 +34,7 @@ type ProfileResponse = {
   userData: UserData;
 };
 
-export default function ProfilePage() {
+const ProfilePage = () => {
   const { userId } = useParams<Params>();
   const [profileData, setProfileData] = useState<UserData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -103,3 +104,13 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+const Page = () => {
+  return (
+    <MainLayout>
+      <ProfilePage />
+    </MainLayout>
+  );
+}
+
+export default Page;

@@ -85,11 +85,24 @@ const allSongs = async (req, res) => {
         if(!allSong){
             return res.status(404).json({message: "Song not found"});
         }
-        res.status(200).json(allSong);
+        const totalSongs = allSong.length;
+        res.status(200).json({totalSongs: totalSongs, allSong: allSong});
     } catch (error) {
         console.log("Error in allSongs", error);
         return res.status(500).json({message: error.message});
     }
 }
-
-module.exports = { createSong,deleteSong,allSongs };
+const getSongsByAlbum = async (req, res) => {
+  try {
+    const {albumId} = req.params;
+    const allSong = await song.find({albumId}).sort({ createdAt: -1 });
+    if(!allSong){
+        return res.status(404).json({message: "Song not found for this album"});
+    }
+    const totalSongsInThisAlbum = allSong.length;
+    res.status(200).json({totalSongsInThisAlbum: totalSongsInThisAlbum, allSong: allSong});
+  } catch (error) {
+    
+  }
+}
+module.exports = { createSong,deleteSong,allSongs,getSongsByAlbum };

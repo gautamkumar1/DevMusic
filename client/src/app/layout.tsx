@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Toaster } from "sonner"; // Import Sonner's Toaster
+import { MusicPlayerProvider } from "./home/components/useMusicPlayer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,7 +33,9 @@ export default function RootLayout({
           
           {/* Main application content */}
           <main className="flex flex-col min-h-screen">
-            {children}
+            <MusicPlayerProvider>
+              {children}
+            </MusicPlayerProvider>
           </main>
         </ThemeProvider>
       </body>

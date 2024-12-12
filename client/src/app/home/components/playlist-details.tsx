@@ -1,91 +1,200 @@
-import Image from 'next/image'
-import { ArrowLeft, Play } from 'lucide-react'
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { Play, Pause, ChevronLeft, SkipForward, SkipBack, Volume2, VolumeX } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { useMusicPlayer } from './useMusicPlayer';
+
 
 interface Song {
-  id: number
-  title: string
-  artist: string
-  duration: string
+  _id: string;
+  title: string;
+  artist: string;
+  imageUrl: string;
+  audioUrl: string;
+  duration: number;
 }
 
 interface PlaylistDetailsProps {
   playlist: {
-    id: number
-    title: string
-    description: string
-    imageUrl: string
-    songs: Song[]
-  }
-  onBack: () => void
+    _id: string;
+    title: string;
+    description: string;
+    imageUrl: string;
+  };
+  onBack: () => void;
 }
 
-export function PlaylistDetails({ playlist, onBack }: PlaylistDetailsProps) {
-    return (
-      <div className="container mx-auto px-4 py-8 min-h-screen bg-[#18181B] overflow-y-auto text-white">
-        <button
-          onClick={onBack}
-          className="mb-6 flex items-center text-gray-300 hover:text-gray-100"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Trending Playlists
-        </button>
-        <div className="flex flex-col md:flex-row items-start md:items-center mb-8">
+export default function PlaylistDetails({ playlist, onBack }: PlaylistDetailsProps) {
+  const [songs, setSongs] = useState<Song[]>([]);
+  const {
+    currentSong,
+    playSong,
+    togglePlayPause,
+    isPlaying,
+    playNext,
+    playPrevious,
+    setPlaylist,
+    volume,
+    setVolume,
+    toggleMute,
+    isMuted,
+  } = useMusicPlayer();
+
+  useEffect(() => {
+    const fetchSongs = async () => {
+      const response = await fetch(`http://localhost:3001/api/getSongsByAlbum/${playlist._id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      const data = await response.json();
+      setSongs(data.allSong);
+      setPlaylist(data.allSong); // Set the playlist in the global context
+    };
+    fetchSongs();
+  }, [playlist._id, setPlaylist]);
+
+  const handlePlayAll = () => {
+    if (songs.length > 0) {
+      playSong(songs[0]); // Start playing the first song in the playlist
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#18181B] text-gray-200 relative">
+      <div className="container mx-auto p-6 pb-24">
+        {/* Header */}
+        <div className="flex items-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onBack}
+            className="hover:bg-gray-700 rounded-full"
+          >
+            <ChevronLeft className="w-6 h-6 text-gray-400" />
+          </Button>
+        </div>
+
+        {/* Playlist Details */}
+        <div className="flex mt-8">
           <Image
-          unoptimized
+            unoptimized
             src={playlist.imageUrl}
             alt={playlist.title}
             width={300}
             height={300}
-            className="rounded-lg shadow-lg mb-4 md:mb-0 md:mr-8"
+            className="rounded-lg"
           />
-          <div>
-            <h2 className="text-3xl font-bold mb-2 text-white">{playlist.title}</h2>
-            <p className="text-gray-400 mb-4">{playlist.description}</p>
-            <button className="bg-orange-600 text-white px-4 py-2 rounded-full flex items-center">
-              <Play className="mr-2 h-4 w-4" />
-              Play All
-            </button>
+          <div className="ml-6">
+            <h1 className="text-4xl font-bold text-white">{playlist.title}</h1>
+            <p className="mt-4 text-gray-400">{playlist.description}</p>
+            <Button
+              onClick={isPlaying ? togglePlayPause : handlePlayAll}
+              className="mt-6 bg-green-600 hover:bg-green-500 text-white"
+            >
+              {isPlaying ? <Pause className="mr-2" /> : <Play className="mr-2" />}
+              <span>{isPlaying ? 'Pause All' : 'Play All'}</span>
+            </Button>
           </div>
         </div>
-        <div className="bg-[#1F1F23] rounded-lg shadow-md overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-[#2A2A2E]">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                  #
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                  Title
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                  Artist
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                  Duration
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-[#1F1F23] divide-y divide-gray-600">
-              {playlist.songs.map((song, index) => (
-                <tr key={song.id} className="hover:bg-gray-700">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                    {index + 1}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                    {song.title}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                    {song.artist}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                    {song.duration}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+        {/* Songs */}
+        <div className="mt-8 bg-[#202023] p-4 rounded-lg">
+          {songs?.map((song) => (
+            <div
+              key={song._id}
+              className={`flex items-center justify-between p-2 rounded-lg hover:bg-[#2C2C2F] ${
+                currentSong?._id === song._id && 'bg-[#2C2C2F]'
+              }`}
+            >
+              <div className="flex items-center">
+                <Image
+                  unoptimized
+                  src={song.imageUrl}
+                  alt={song.title}
+                  width={50}
+                  height={50}
+                  className="rounded"
+                />
+                <div className="ml-4">
+                  <p className="font-semibold text-white">{song.title}</p>
+                  <p className="text-gray-400 text-sm">{song.artist}</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => (currentSong?._id === song._id ? togglePlayPause() : playSong(song))}
+                className="text-gray-400 hover:text-white"
+              >
+                {currentSong?._id === song._id && isPlaying ? <Pause /> : <Play />}
+              </Button>
+            </div>
+          ))}
         </div>
       </div>
-    );
-  }
-  
+
+      {/* Player */}
+      <div className="fixed bottom-0 left-0 right-0 bg-[#202023] p-4 z-50">
+        <div className="flex items-center justify-between max-w-screen-xl mx-auto">
+          {/* Song Info with Image */}
+          <div className="flex items-center">
+            {currentSong && (
+              <Image
+                unoptimized
+                src={currentSong.imageUrl}
+                alt={currentSong.title}
+                width={50}
+                height={50}
+                className="rounded mr-4"
+              />
+            )}
+            <div>
+              <p className="font-semibold text-white">{currentSong?.title || 'No song playing'}</p>
+              <p className="text-sm text-gray-400">{currentSong?.artist || ''}</p>
+            </div>
+          </div>
+          {/* Controls */}
+          <div className="flex items-center">
+            <Button variant="ghost" size="icon" onClick={playPrevious}>
+              <SkipBack className="text-gray-400 w-6 h-6 hover:text-white" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={togglePlayPause} className="mx-4">
+              {isPlaying ? (
+                <Pause className="w-6 h-6 text-white" />
+              ) : (
+                <Play className="w-6 h-6 text-gray-400 hover:text-white" />
+              )}
+            </Button>
+            <Button variant="ghost" size="icon" onClick={playNext}>
+              <SkipForward className="text-gray-400 w-6 h-6 hover:text-white" />
+            </Button>
+          </div>
+          {/* Volume */}
+          <div className="flex items-center">
+            <Button variant="ghost" size="icon" onClick={toggleMute}>
+              {isMuted ? (
+                <VolumeX className="text-gray-400 w-6 h-6 hover:text-white" />
+              ) : (
+                <Volume2 className="text-gray-400 w-6 h-6 hover:text-white" />
+              )}
+            </Button>
+            <Slider
+              value={[isMuted ? 0 : volume]}
+              min={0}
+              max={1}
+              step={0.01}
+              onValueChange={(newVolume) => setVolume(newVolume[0])}
+              className="w-24 ml-2"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
