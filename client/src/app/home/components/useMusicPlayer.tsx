@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useState, useRef, useEffect, useContext, ReactNode } from 'react';
+import { useChatStore } from '@/store/useChatStore';
+import React, { createContext, useState, useRef, useEffect, useContext, ReactNode, useCallback } from 'react';
 
 interface Song {
   _id: string;
@@ -62,7 +63,8 @@ export const MusicPlayerProvider = ({ children }: { children: ReactNode }) => {
       };
     }
   }, [playlist, currentIndex]);
-
+  const socket = useChatStore.getState().socket;
+  
   const playSong = (song: Song) => {
     if (audioRef.current) {
       setCurrentSong(song);
@@ -110,7 +112,12 @@ export const MusicPlayerProvider = ({ children }: { children: ReactNode }) => {
       playSong(playlist[prevIndex]);
     }
   };
-
+  if(socket.auth){
+    socket.emit("update_activity",{
+      userId: socket.auth.userId,
+      activity: isPlaying ? "Playing " + currentSong?.title + " by " + currentSong?.artist : "Idle"
+    })
+  }
   return (
     <MusicPlayerContext.Provider
       value={{
