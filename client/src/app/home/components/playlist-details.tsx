@@ -95,7 +95,7 @@ export default function PlaylistDetails({ playlist, onBack }: PlaylistDetailsPro
             <p className="mt-4 text-gray-400">{playlist.description}</p>
             <Button
               onClick={isPlaying ? togglePlayPause : handlePlayAll}
-              className="mt-6 bg-green-600 hover:bg-green-500 text-white"
+              className="mt-6 bg-orange-600 hover:bg-orange-500 text-white"
             >
               {isPlaying ? <Pause className="mr-2" /> : <Play className="mr-2" />}
               <span>{isPlaying ? 'Pause All' : 'Play All'}</span>

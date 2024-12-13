@@ -24,7 +24,7 @@ const LeftSidebar = () => {
   const decodedToken = token ? jwtDecode<any>(token) : null;
   const router = useRouter();
   const { isLoggedIn } = useUserStore();
-
+  const roomId = localStorage.getItem("roomId");
   const {
     currentSong,
     isPlaying,
@@ -95,7 +95,8 @@ const LeftSidebar = () => {
 
               {/* Live Coding */}
               <Link
-                href="/live-coding"
+                href="/create-workspace"
+                
                 className={cn(
                   buttonVariants({
                     variant: "ghost",

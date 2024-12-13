@@ -11,6 +11,10 @@
   "dependencies": {
     "@devnomic/marquee": "^1.0.2",
     "@hookform/resolvers": "^3.9.0",
+    "@liveblocks/client": "^2.14.0",
+    "@liveblocks/react": "^2.14.0",
+    "@liveblocks/yjs": "^2.14.0",
+    "@monaco-editor/react": "^4.6.0",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-avatar": "^1.1.1",
     "@radix-ui/react-collapsible": "^1.0.3",
@@ -39,6 +43,10 @@
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.0.3",
+    "y-monaco": "^0.1.6",
+    "y-protocols": "^1.0.6",
+    "yjs": "^13.6.20",
     "zod": "^3.23.8",
     "zustand": "^5.0.1"
   },

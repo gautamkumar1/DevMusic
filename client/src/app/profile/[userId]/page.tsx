@@ -7,6 +7,7 @@ import ProfileHeader from "../components/ProfileHeader";
 import Skills from "../components/Skills";
 import { Loader2 } from "lucide-react";
 import MainLayout from "@/components/mainLayout/MainLayout";
+import PrivateRoute from "@/components/PrivateRoute";
 
 type Params = {
   userId: string;
@@ -107,9 +108,11 @@ const ProfilePage = () => {
 
 const Page = () => {
   return (
+    <PrivateRoute>
     <MainLayout>
       <ProfilePage />
     </MainLayout>
+    </PrivateRoute>
   );
 }
 
