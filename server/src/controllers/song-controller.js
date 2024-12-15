@@ -64,7 +64,7 @@ const createSong = async (req, res) => {
   
 const deleteSong = async (req, res) => {
     try {
-        const {songId} = req.params;
+        const {songId} = req.body;
         const isSongDeleted = await song.findByIdAndDelete(songId);
         if(!isSongDeleted){
             return res.status(404).json({message: "Song not found"});

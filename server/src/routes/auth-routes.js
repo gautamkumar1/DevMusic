@@ -1,6 +1,6 @@
 const express = require("express");
 const upload = require("../middleware/multer-middleware");
-const { register, login, getSingleUser, getAllUsers, getMessage } = require("../controllers/auth-controllers");
+const { register, login, getSingleUser, getAllUsers, getMessage, getStats } = require("../controllers/auth-controllers");
 const { isAuthenticated, isAuthorized } = require("../middleware/auth-middleware");
 const router = express.Router();
 
@@ -13,4 +13,5 @@ router.post("/user/login", login);
 router.get("/user/:userId",isAuthenticated,getSingleUser)
 router.get("/allUsers",isAuthenticated,getAllUsers)
 router.get("/users/messages/:userId",isAuthenticated,getMessage)
+router.get("/getallstats",isAuthenticated,getStats)
 module.exports = router;

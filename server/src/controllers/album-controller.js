@@ -39,7 +39,7 @@ const createAlbum = async (req, res) => {
 
 const deleteAlbum = async (req, res) => {
     try {
-        const { albumId } = req.params;
+        const { albumId } = req.body;
         const album = await albumModel.findByIdAndDelete(albumId);
         if (!album) {
             return res.status(404).json({ message: "Album not found" });

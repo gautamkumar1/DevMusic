@@ -1,5 +1,7 @@
 const User = require("../models/auth-model");
 const Message = require("../models/message-model")
+const Song = require("../models/song-model")
+const Album = require("../models/album-model")
 const { uploadOnCloudinary } = require("../utils/cloudinary");
 const register = async (req, res) => {
     // console.log(`req.body: ${JSON.stringify(req.body)}`);
@@ -116,4 +118,18 @@ const getMessage = async (req, res) => {
     }
 }
 
-module.exports = {register,login,getSingleUser,getAllUsers,getMessage};
+const getStats = async (req, res) => {
+    try {
+        const users = await User.find();
+        const totalUsers = users.length;
+        const songs = await Song.find();
+        const totalSongs = songs.length;
+        const albums = await Album.find();
+        const totalAlbums = albums.length;
+        return res.status(200).json({totalUsers: totalUsers, totalSongs: totalSongs, totalAlbums: totalAlbums});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+module.exports = {register,login,getSingleUser,getAllUsers,getMessage,getStats};

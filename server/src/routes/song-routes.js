@@ -14,7 +14,7 @@ router.post("/admin/songCreate",isAuthenticated,isAuthorized,upload.fields([{
 }
 ]),createSong)
 
-router.delete("/admin/songDelete/:songId",isAuthenticated,isAuthorized,deleteSong)
+router.delete("/admin/songDelete",isAuthenticated,isAuthorized,deleteSong)
 router.get("/songs",isAuthenticated,allSongs)
 router.get("/getSongsByAlbum/:albumId",isAuthenticated,getSongsByAlbum)
 module.exports = router;

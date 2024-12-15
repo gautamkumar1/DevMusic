@@ -8,6 +8,6 @@ router.post("/admin/albumCreate",isAuthenticated,isAuthorized,upload.fields([   
     name: "imageUrl",
     maxCount: 1
 }]),createAlbum)
-router.delete("/admin/albumDelete/:albumId",isAuthenticated,isAuthorized,deleteAlbum)
+router.delete("/admin/albumDelete",isAuthenticated,isAuthorized,deleteAlbum)
 router.get("/albums",getAllAlbums)
 module.exports = router;
