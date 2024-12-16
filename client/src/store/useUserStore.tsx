@@ -38,7 +38,7 @@ const useUserStore = create<UserStore>()(
       isLoading: false,
       error: null,
       success: false,
-      isLoggedIn: !!localStorage.getItem("token"),
+      isLoggedIn: false,
       isAdmin: false,
       registerUser: async (formData, profile_picture) => {
         set({ isLoading: true, error: null, success: false });
