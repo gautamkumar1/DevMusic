@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import useMusicStore from "@/store/useMusicStore";
 
 import { Calendar, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 const SongsTable = () => {
 	const { songs, songLoading, error, deleteSong } = useMusicStore();
@@ -22,7 +23,11 @@ const SongsTable = () => {
 			</div>
 		);
 	}
-
+	const handleDeleteSong = (songId: string) => {
+		deleteSong(songId);
+		toast.success("Song deleted successfully");
+		window.location.reload();
+	};
 	return (
 		<Table>
 			<TableHeader>
@@ -56,7 +61,7 @@ const SongsTable = () => {
 									variant={"ghost"}
 									size={"sm"}
 									className='text-red-400 hover:text-red-300 hover:bg-red-400/10'
-									onClick={() => deleteSong(song._id)}
+									onClick={() => handleDeleteSong(song._id)}
 								>
 									<Trash2 className='size-4' />
 								</Button>

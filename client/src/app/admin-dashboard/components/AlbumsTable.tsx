@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import useMusicStore from "@/store/useMusicStore";
 import { Calendar, Music, Trash2 } from "lucide-react";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const AlbumsTable = () => {
 	const { albums, deleteAlbum, fetchAlbums } = useMusicStore();
@@ -10,7 +11,11 @@ const AlbumsTable = () => {
 	useEffect(() => {
 		fetchAlbums();
 	}, [fetchAlbums]);
-
+	const handleDeleteAlbum = (albumId: string) => {
+		deleteAlbum(albumId);
+		toast.success("Album deleted successfully");
+		window.location.reload();
+	};
 	return (
 		<Table>
 			<TableHeader>
@@ -48,7 +53,7 @@ const AlbumsTable = () => {
 								<Button
 									variant='ghost'
 									size='sm'
-									onClick={() => deleteAlbum(album._id)}
+									onClick={() => handleDeleteAlbum(album._id)}
 									className='text-red-400 hover:text-red-300 hover:bg-red-400/10'
 								>
 									<Trash2 className='h-4 w-4' />
