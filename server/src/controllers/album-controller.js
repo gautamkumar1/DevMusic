@@ -4,8 +4,7 @@ const { uploadOnCloudinary } = require("../utils/cloudinary");
 const createAlbum = async (req, res) => {
     try {
         console.log(`req.body: ${JSON.stringify(req.body)}`);
-        
-        const { title, artist, releaseYear } = req.body;
+        const { title, artist, releaseYear,language } = req.body;
         let imageUrlPath;
 
         if (
@@ -22,6 +21,7 @@ const createAlbum = async (req, res) => {
             artist,
             imageUrl:imageUrlUpload,
             releaseYear,
+            language
         });
         if (!album) {
             return res.status(400).json({ message: "Album not created" });

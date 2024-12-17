@@ -7,6 +7,7 @@ const albumSchema = new mongoose.Schema(
 		imageUrl: { type: String, required: true },
 		releaseYear: { type: Number,},
 		songs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Song" }],
+		language: { type: String, required: true },
 	},
 	{ timestamps: true }
 ); 

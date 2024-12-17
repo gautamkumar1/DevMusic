@@ -28,8 +28,8 @@ const createSong = async (req, res) => {
         ? await uploadOnCloudinary(audioUrlPath)
         : null;
   
-    //   console.log("Image URL Upload:", imageUrlUpload);
-    //   console.log("Audio URL Upload:", audioUrlPathUpload);
+      console.log("Image URL Upload:", imageUrlUpload);
+      console.log("Audio URL Upload:", audioUrlPathUpload);
   
       // Create the song document
       const songCreated = await song.create({
