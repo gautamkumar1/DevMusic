@@ -1,11 +1,7 @@
 "use client";
-
-import * as Y from "yjs";
-import { LiveblocksYjsProvider } from "@liveblocks/yjs";
 import { useCallback, useEffect, useState } from "react";
 import { Editor } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
-import { MonacoBinding } from "y-monaco";
 import { Awareness } from "y-protocols/awareness";
 import { useRoom } from "@liveblocks/react";
 import { jwtDecode } from "jwt-decode";
@@ -34,34 +30,43 @@ const CollaborativeEditor = () => {
   // Set up Liveblocks Yjs provider and attach Monaco editor
   useEffect(() => {
     let yProvider: any;
-    let yDoc: Y.Doc;
-    let binding: MonacoBinding;
+    let yDoc: any;
+    let binding: any;
 
-    if (editorRef && user) {
-      yDoc = new Y.Doc();
-      const yText = yDoc.getText("monaco");
-      yProvider = new LiveblocksYjsProvider(room, yDoc);
+    const initYjs = async () => {
+      if (editorRef && typeof window !== 'undefined') {
+        const { Doc } = await import('yjs');
+        const { LiveblocksYjsProvider } = await import('@liveblocks/yjs');
+        const { MonacoBinding } = await import('y-monaco');
+        const { Awareness } = await import('y-protocols/awareness');
 
-      // Generate a dynamic color if not provided
-      const userColor = generateColorFromString(user._id || user.username);
+        yDoc = new Doc();
+        const yText = yDoc.getText("monaco");
+        yProvider = new LiveblocksYjsProvider(room, yDoc);
 
-      // Set user info in awareness
-      yProvider.awareness.setLocalState({
-        user: {
-          id: user._id,
-          name: user.username,
-          color: userColor,
-        },
-      });
+        // Generate a dynamic color if not provided
+        const userColor = generateColorFromString(user._id || user.username);
 
-      // Attach Yjs to Monaco
-      binding = new MonacoBinding(
-        yText,
-        editorRef.getModel() as editor.ITextModel,
-        new Set([editorRef]),
-        yProvider.awareness as Awareness
-      );
-    }
+        // Set user info in awareness
+        yProvider.awareness.setLocalState({
+          user: {
+            id: user._id,
+            name: user.username,
+            color: userColor,
+          },
+        });
+
+        // Attach Yjs to Monaco
+        binding = new MonacoBinding(
+          yText,
+          editorRef.getModel() as editor.ITextModel,
+          new Set([editorRef]),
+          yProvider.awareness as Awareness
+        );
+      }
+    };
+
+    initYjs();
 
     return () => {
       yDoc?.destroy();
