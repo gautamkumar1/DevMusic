@@ -7,7 +7,13 @@ const createSong = async (req, res) => {
     //   console.log(`Request Body: ${JSON.stringify(req.body)}`);
   
       const { title, artist, albumId, duration } = req.body;
-  
+      const existingSong = await song.findOne({ title, artist });
+      if (existingSong) {
+        return res.status(400).json({
+          message: `Song with title "${title}" and artist "${artist}" already exists in the database.`,
+        });
+      }
+
       // Image URL handling
       let imageUrlPath;
       if (req.files && req.files.imageUrl && req.files.imageUrl[0]) {
@@ -60,7 +66,7 @@ const createSong = async (req, res) => {
       console.error("Error in createSong:", error);
       return res.status(500).json({ message: error.message });
     }
-  };
+};
   
 const deleteSong = async (req, res) => {
     try {
