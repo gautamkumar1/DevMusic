@@ -17,6 +17,9 @@ interface MusicPlayerContextProps {
   isPlaying: boolean;
   volume: number;
   isMuted: boolean;
+  duration: number;
+  currentTime: number;
+  setCurrentTime: (time: number) => void;
   playSong: (song: Song) => void;
   togglePlayPause: () => void;
   stopSong: () => void;
@@ -36,6 +39,8 @@ export const MusicPlayerProvider = ({ children }: { children: ReactNode }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -58,11 +63,21 @@ export const MusicPlayerProvider = ({ children }: { children: ReactNode }) => {
       };
 
       audioRef.current.addEventListener('ended', handleEnded);
+
+      // Update current time as the song plays
+      const updateCurrentTime = () => {
+        setCurrentTime(audioRef.current!.currentTime);
+      };
+
+      audioRef.current.addEventListener('timeupdate', updateCurrentTime);
+      
       return () => {
         audioRef.current?.removeEventListener('ended', handleEnded);
+        audioRef.current?.removeEventListener('timeupdate', updateCurrentTime);
       };
     }
   }, [playlist, currentIndex]);
+
   const socket = useChatStore.getState().socket;
   
   const playSong = (song: Song) => {
@@ -112,12 +127,22 @@ export const MusicPlayerProvider = ({ children }: { children: ReactNode }) => {
       playSong(playlist[prevIndex]);
     }
   };
-  if(socket.auth){
-    socket.emit("update_activity",{
+
+  // Send activity updates (optional)
+  if (socket.auth) {
+    socket.emit("update_activity", {
       userId: socket.auth.userId,
       activity: isPlaying ? "Playing " + currentSong?.title + " by " + currentSong?.artist : "Idle"
-    })
+    });
   }
+
+  const setNewCurrentTime = (time: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
+      setCurrentTime(time);
+    }
+  };
+
   return (
     <MusicPlayerContext.Provider
       value={{
@@ -125,6 +150,9 @@ export const MusicPlayerProvider = ({ children }: { children: ReactNode }) => {
         isPlaying,
         volume,
         isMuted,
+        duration: currentSong?.duration || 0,
+        currentTime,
+        setCurrentTime: setNewCurrentTime,
         playSong,
         togglePlayPause,
         stopSong,
