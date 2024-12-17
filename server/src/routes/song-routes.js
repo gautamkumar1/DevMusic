@@ -6,11 +6,11 @@ const router = express.Router();
 
 router.post("/admin/songCreate",isAuthenticated,isAuthorized,upload.fields([{
     name: "audioUrl",
-    maxCount: 1
+    maxCount: 10
 },
 {
     name: "imageUrl",
-    maxCount: 1
+    maxCount: 10
 }
 ]),createSong)
 
