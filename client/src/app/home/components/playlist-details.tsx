@@ -26,15 +26,12 @@ interface PlaylistDetailsProps {
 }
 
 export default function PlaylistDetails({ playlist, onBack }: PlaylistDetailsProps) {
-  const [songs, setSongs] = useState<Song[]>([]);
-  const {
-    currentSong,
-    playSong,
-    togglePlayPause,
-    isPlaying,
-    setPlaylist,
-  } = useMusicPlayer();
+  const [allSongs, setAllSongs] = useState<Song[]>([]);
+  const [visibleSongs, setVisibleSongs] = useState<Song[]>([]);
+  const chunkSize = 10; // Number of songs to load per scroll
+  const { currentSong, playSong, togglePlayPause, isPlaying, setPlaylist } = useMusicPlayer();
 
+  // Fetch all songs initially
   useEffect(() => {
     const fetchSongs = async () => {
       const response = await fetch(`/api/getSongsByAlbum/${playlist._id}`, {
@@ -45,15 +42,43 @@ export default function PlaylistDetails({ playlist, onBack }: PlaylistDetailsPro
         },
       });
       const data = await response.json();
-      setSongs(data.allSong);
+      setAllSongs(data.allSong); // Store all songs
+      setVisibleSongs(data.allSong.slice(0, chunkSize)); // Load the first chunk
       setPlaylist(data.allSong); // Set the playlist in the global context
     };
     fetchSongs();
   }, [playlist._id, setPlaylist]);
 
+  // Load more songs when scrolled to the end
+  const handleLoadMore = () => {
+    setVisibleSongs((prev) => [
+      ...prev,
+      ...allSongs.slice(prev.length, prev.length + chunkSize),
+    ]);
+  };
+
+  // Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          handleLoadMore();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    const target = document.querySelector('#scroll-end');
+    if (target) observer.observe(target);
+
+    return () => {
+      if (target) observer.unobserve(target);
+    };
+  }, [visibleSongs]);
+
   const handlePlayAll = () => {
-    if (songs.length > 0) {
-      playSong(songs[0]); // Start playing the first song in the playlist
+    if (allSongs.length > 0) {
+      playSong(allSongs[0]); // Start playing the first song in the playlist
     }
   };
 
@@ -96,8 +121,8 @@ export default function PlaylistDetails({ playlist, onBack }: PlaylistDetailsPro
         </div>
 
         {/* Songs */}
-        <div className="mt-8 bg-[#202023] p-4 rounded-lg">
-          {songs?.map((song) => (
+        <div className="mt-8 bg-[#202023] p-4 rounded-lg h-[500px] overflow-y-auto">
+          {visibleSongs?.map((song) => (
             <div
               key={song._id}
               className={`flex items-center justify-between p-2 rounded-lg hover:bg-[#2C2C2F] ${
@@ -128,6 +153,8 @@ export default function PlaylistDetails({ playlist, onBack }: PlaylistDetailsPro
               </Button>
             </div>
           ))}
+          {/* Scroll End Target */}
+          <div id="scroll-end" className="h-10"></div>
         </div>
       </div>
     </div>
