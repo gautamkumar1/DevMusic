@@ -58,7 +58,7 @@ const useUserStore = create<UserStore>()(
             form.append("profile_picture", profile_picture);
           }
 
-          const response = await fetch("http://localhost:3001/api/user/register", {
+          const response = await fetch("/api/user/register", {
             method: "POST",
             body: form,
           });
@@ -84,7 +84,7 @@ const useUserStore = create<UserStore>()(
       loginUser: async (loginData) => {
         set({ isLoading: true, error: null, success: false, isLoggedIn: false });
         try {
-          const response = await fetch("http://localhost:3001/api/user/login", {
+          const response = await fetch("/api/user/login", {
             method: "POST",
             body: JSON.stringify(loginData),
             headers: {

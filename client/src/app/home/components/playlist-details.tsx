@@ -2,11 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Play, Pause, ChevronLeft, SkipForward, SkipBack, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
 import { useMusicPlayer } from './useMusicPlayer';
-
 
 interface Song {
   _id: string;
@@ -34,18 +32,12 @@ export default function PlaylistDetails({ playlist, onBack }: PlaylistDetailsPro
     playSong,
     togglePlayPause,
     isPlaying,
-    playNext,
-    playPrevious,
     setPlaylist,
-    volume,
-    setVolume,
-    toggleMute,
-    isMuted,
   } = useMusicPlayer();
 
   useEffect(() => {
     const fetchSongs = async () => {
-      const response = await fetch(`http://localhost:3001/api/getSongsByAlbum/${playlist._id}`, {
+      const response = await fetch(`/api/getSongsByAlbum/${playlist._id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +59,7 @@ export default function PlaylistDetails({ playlist, onBack }: PlaylistDetailsPro
 
   return (
     <div className="min-h-screen bg-[#18181B] text-gray-200 relative">
-      <div className="container mx-auto p-6 pb-24">
+      <div className="container mx-auto p-6">
         {/* Header */}
         <div className="flex items-center">
           <Button
@@ -136,63 +128,6 @@ export default function PlaylistDetails({ playlist, onBack }: PlaylistDetailsPro
               </Button>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* Player */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#202023] p-4 z-50">
-        <div className="flex items-center justify-between max-w-screen-xl mx-auto">
-          {/* Song Info with Image */}
-          <div className="flex items-center">
-            {currentSong && (
-              <Image
-                unoptimized
-                src={currentSong.imageUrl}
-                alt={currentSong.title}
-                width={50}
-                height={50}
-                className="rounded mr-4"
-              />
-            )}
-            <div>
-              <p className="font-semibold text-white">{currentSong?.title || 'No song playing'}</p>
-              <p className="text-sm text-gray-400">{currentSong?.artist || ''}</p>
-            </div>
-          </div>
-          {/* Controls */}
-          <div className="flex items-center">
-            <Button variant="ghost" size="icon" onClick={playPrevious}>
-              <SkipBack className="text-gray-400 w-6 h-6 hover:text-white" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={togglePlayPause} className="mx-4">
-              {isPlaying ? (
-                <Pause className="w-6 h-6 text-white" />
-              ) : (
-                <Play className="w-6 h-6 text-gray-400 hover:text-white" />
-              )}
-            </Button>
-            <Button variant="ghost" size="icon" onClick={playNext}>
-              <SkipForward className="text-gray-400 w-6 h-6 hover:text-white" />
-            </Button>
-          </div>
-          {/* Volume */}
-          <div className="flex items-center">
-            <Button variant="ghost" size="icon" onClick={toggleMute}>
-              {isMuted ? (
-                <VolumeX className="text-gray-400 w-6 h-6 hover:text-white" />
-              ) : (
-                <Volume2 className="text-gray-400 w-6 h-6 hover:text-white" />
-              )}
-            </Button>
-            <Slider
-              value={[isMuted ? 0 : volume]}
-              min={0}
-              max={1}
-              step={0.01}
-              onValueChange={(newVolume) => setVolume(newVolume[0])}
-              className="w-24 ml-2"
-            />
-          </div>
         </div>
       </div>
     </div>

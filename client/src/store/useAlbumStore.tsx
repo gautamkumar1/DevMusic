@@ -6,6 +6,7 @@ interface Album {
   title: string;
   artist: string;
   imageUrl: string;
+  language: string;
   releaseYear: number;
   songs: string[]; // Modify if songs have more detailed structure
 }
@@ -27,7 +28,7 @@ const useAlbumStore = create<AlbumStoreState>((set) => ({
   fetchAlbums: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch('http://localhost:3001/api/albums');
+      const response = await fetch('/api/albums');
       if (!response.ok) {
         throw new Error(`Failed to fetch albums: ${response.statusText}`);
       }

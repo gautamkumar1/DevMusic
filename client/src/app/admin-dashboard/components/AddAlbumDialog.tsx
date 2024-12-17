@@ -22,6 +22,7 @@ const AddAlbumDialog = () => {
 	const [newAlbum, setNewAlbum] = useState({
 		title: "",
 		artist: "",
+		language: "",
 		releaseYear: new Date().getFullYear(),
 	});
 
@@ -45,14 +46,14 @@ const AddAlbumDialog = () => {
 			const formData = new FormData();
 			formData.append("title", newAlbum.title);
 			formData.append("artist", newAlbum.artist);
+			formData.append("language", newAlbum.language);
 			formData.append("releaseYear", newAlbum.releaseYear.toString());
-			formData.append("imageFile", imageFile);
+			formData.append("imageUrl", imageFile);
 
 			const response = await fetch("/api/admin/albumCreate",{
 				method: "POST",
 				body: formData,
 				headers: {
-					"Content-Type": "multipart/form-data",
 					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 			})
@@ -66,6 +67,7 @@ const AddAlbumDialog = () => {
 			setNewAlbum({
 				title: "",
 				artist: "",
+				language: "",
 				releaseYear: new Date().getFullYear(),
 			});
 			setImageFile(null);
@@ -131,6 +133,15 @@ const AddAlbumDialog = () => {
 							onChange={(e) => setNewAlbum({ ...newAlbum, artist: e.target.value })}
 							className='bg-zinc-800 border-zinc-700'
 							placeholder='Enter artist name'
+						/>
+					</div>
+					<div className='space-y-2'>
+						<label className='text-sm font-medium'>Language</label>
+						<Input
+							value={newAlbum.language}
+							onChange={(e) => setNewAlbum({ ...newAlbum, language: e.target.value })}
+							className='bg-zinc-800 border-zinc-700'
+							placeholder='Enter language'
 						/>
 					</div>
 					<div className='space-y-2'>
