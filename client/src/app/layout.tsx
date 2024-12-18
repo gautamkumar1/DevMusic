@@ -4,7 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Toaster } from "sonner"; // Import Sonner's Toaster
-import { MusicPlayerProvider } from "./home/components/useMusicPlayer";
+import { MusicPlayerProvider } from "./user-dashboard/components/useMusicPlayer";
 import ClientWrapper from "./liveCoding/components/ClientWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
