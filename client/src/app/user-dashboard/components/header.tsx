@@ -1,9 +1,10 @@
 "use client";
 import Link from 'next/link';
-import { Search, Menu } from 'lucide-react';
+// import { Search, Menu } from 'lucide-react';
 import useAlbumStore from '@/store/useAlbumStore';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { IconMenu, IconSearch } from '@tabler/icons-react';
 
 // Define the Album interface
 interface Album {
@@ -37,7 +38,7 @@ export function Header() {
   }, [searchQuery, albums]);
 
   return (
-    <header className="bg-[#18181B] sticky top-0 z-40 w-full border-b border-[#2A2A2E]">
+    <header className="bg-[#18181B] sticky top-0 z-40 w-full">
       <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
         <div className="flex gap-6 md:gap-10">
           <Link href="/" className="flex items-center space-x-2">
@@ -61,7 +62,7 @@ export function Header() {
         <div className="flex flex-1 items-center justify-end space-x-4">
           <div className="w-full flex-1 md:w-auto md:flex-none">
             <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+              <IconSearch className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
               <input
                 type="search"
                 placeholder="Search albums..."
@@ -72,50 +73,56 @@ export function Header() {
             </div>
           </div>
           <button className="md:hidden">
-            <Menu className="h-6 w-6 text-gray-300" />
+            <IconMenu className="h-6 w-6 text-gray-300" />
             <span className="sr-only">Toggle menu</span>
           </button>
         </div>
       </div>
-      {/* Render filtered albums */}
-      <div className="p-4">
-        {loading && <p>Loading...</p>}
-        {error && <p>Error loading albums.</p>}
-        {!loading && !error && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredAlbums.map((album) => (
-              <div
-                key={album._id}
-                className="bg-[#18181B] rounded-lg shadow-md overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 focus:scale-105 focus:outline-none cursor-pointer"
-                onClick={() => console.log(`Selected album: ${album.title}`)}
-                tabIndex={0}
-                role="button"
-                aria-label={`Open album ${album.title}`}
-              >
-                <Image
-                  unoptimized
-                  src={album.imageUrl}
-                  alt={album.title}
-                  width={400}
-                  height={400}
-                  className="w-full h-48 object-cover"
-                  loading="lazy"
-                />
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg mb-1 text-white">{album?.title}</h3>
-                  <p className="text-gray-400 text-sm mb-2">By {album?.artist}</p>
-                  <p className="text-gray-500 text-xs">
-                    {album?.songs?.length} songs • Released in {album?.releaseYear}
-                  </p>
-                  <p className="text-gray-400 text-xs mt-2">
-                    Language: <span className="font-semibold">{album.language}</span>
-                  </p>
+      
+      {/* Move filtered albums to a separate container with proper z-index and positioning */}
+      {searchQuery && (
+        <div className="absolute left-0 right-0 bg-zinc-900 border border-zinc-800 rounded-b-lg shadow-lg z-30">
+          <div className="container p-4">
+            {filteredAlbums.length > 0 ? (
+              <div className="max-h-[60vh] overflow-y-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredAlbums.map((album) => (
+                    <div
+                      key={album._id}
+                      className="bg-zinc-800 rounded-lg shadow-md overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 focus:scale-105 focus:outline-none cursor-pointer"
+                      onClick={() => console.log(`Selected album: ${album.title}`)}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`Open album ${album.title}`}
+                    >
+                      <div className="flex items-center p-3 gap-3">
+                        <Image
+                          unoptimized
+                          src={album.imageUrl}
+                          alt={album.title}
+                          width={50}
+                          height={50}
+                          className="rounded-md object-cover"
+                          loading="lazy"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-sm text-white truncate">{album.title}</h3>
+                          <p className="text-zinc-400 text-xs truncate">By {album.artist}</p>
+                          <p className="text-zinc-500 text-xs mt-1">{album.language}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
+            ) : (
+              <div className="py-8 text-center">
+                <p className="text-zinc-400 text-sm">No albums found matching "{searchQuery}"</p>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </header>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
-import { HomeIcon, MessageCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+// import { HomeIcon, MessageCircle } from ";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
@@ -7,23 +8,24 @@ import useUserStore from "@/store/useUserStore";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Slider } from "./ui/slider";
-import {
-  Play,
-  Pause,
-  SkipBack,
-  SkipForward,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+// import {
+//   Play,
+//   Pause,
+//   SkipBack,
+//   SkipForward,
+//   Volume2,
+//   VolumeX,
+// } from "lucide-react";
 import { useMusicPlayer } from "@/app/user-dashboard/components/useMusicPlayer";
 import { jwtDecode } from "jwt-decode";
+import { IconEyePause, IconHomeBitcoin, IconMessageCircle, IconPlayerPause, IconPlayerPlay, IconPlayerSkipBack, IconPlayerSkipForward, IconVolume2, IconVolumeOff } from "@tabler/icons-react";
 
 const LeftSidebar = () => {
-  const token = localStorage.getItem("token");
-  const decodedToken = token ? jwtDecode<any>(token) : null;
+  const [token, setToken] = useState<string | null>(null);
+  const [decodedToken, setDecodedToken] = useState<any>(null);
   const router = useRouter();
   const { isLoggedIn } = useUserStore();
-  const roomId = localStorage.getItem("roomId");
+  const [roomId, setRoomId] = useState<string | null>(null);
   const {
     currentSong,
     isPlaying,
@@ -38,6 +40,21 @@ const LeftSidebar = () => {
     setCurrentTime,
     duration,
   } = useMusicPlayer();
+
+  useEffect(() => {
+    // Access localStorage only after component mounts
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
+    if (storedToken) {
+      setDecodedToken(jwtDecode<any>(storedToken));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Access localStorage only after component mounts
+    const storedRoomId = localStorage.getItem("roomId");
+    setRoomId(storedRoomId);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -66,7 +83,7 @@ const LeftSidebar = () => {
               })
             )}
           >
-            <HomeIcon className="mr-2 w-5 h-5" />
+            <IconHomeBitcoin className="mr-2 w-5 h-5" />
             <span className="hidden md:inline">Home</span>
           </Link>
 
@@ -84,7 +101,7 @@ const LeftSidebar = () => {
                   })
                 )}
               >
-                <MessageCircle className="mr-2 w-5 h-5" />
+                <IconMessageCircle className="mr-2 w-5 h-5" />
                 <span className="hidden md:inline">Messages</span>
               </Link>
               {/* Create Room */}
@@ -119,7 +136,7 @@ const LeftSidebar = () => {
 
               {/* View Profile */}
               <Link
-                href={`/profile/${decodedToken.id}`}
+                href={`/profile/${decodedToken?.id}`}
                 prefetch={true}
                 className={cn(
                   buttonVariants({
@@ -179,23 +196,23 @@ const LeftSidebar = () => {
             onClick={playPrevious}
             className="p-2 rounded-full bg-zinc-800 hover:bg-zinc-700"
           >
-            <SkipBack className="w-5 h-5 text-white" />
+            <IconPlayerSkipBack className="w-5 h-5 text-white" />
           </button>
           <button
             onClick={togglePlayPause}
             className="p-2 rounded-full bg-zinc-800 hover:bg-zinc-700"
           >
             {isPlaying ? (
-              <Pause className="w-5 h-5 text-white" />
+              <IconPlayerPause className="w-5 h-5 text-white" />
             ) : (
-              <Play className="w-5 h-5 text-white" />
+              <IconPlayerPlay className="w-5 h-5 text-white" />
             )}
           </button>
           <button
             onClick={playNext}
             className="p-2 rounded-full bg-zinc-800 hover:bg-zinc-700"
           >
-            <SkipForward className="w-5 h-5 text-white" />
+            <IconPlayerSkipForward className="w-5 h-5 text-white" />
           </button>
         </div>
 
@@ -219,9 +236,9 @@ const LeftSidebar = () => {
             className="p-2 rounded-full bg-zinc-800 hover:bg-zinc-700"
           >
             {isMuted ? (
-              <VolumeX className="w-5 h-5 text-white" />
+              <IconVolumeOff className="w-5 h-5 text-white" />
             ) : (
-              <Volume2 className="w-5 h-5 text-white" />
+              <IconVolume2 className="w-5 h-5 text-white" />
             )}
           </button>
           <Slider

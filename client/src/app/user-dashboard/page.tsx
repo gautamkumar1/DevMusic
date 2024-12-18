@@ -25,18 +25,28 @@ interface Playlist {
 
 const Home = () => {
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null)
+  const [token, setToken] = useState<string>("");
+  const [decodedToken, setDecodedToken] = useState<any>(null);
   const {
     isConnected,
     initSocket,
   } = useChatStore();
-  const token = localStorage.getItem("token") || "";
-  const decodedToken = jwtDecode<any>(token) || null;
-// Initialize socket connection
-useEffect(() => {
-  if (decodedToken?.id && !isConnected) {
-    initSocket(decodedToken.id);
-  }
-}, [initSocket, isConnected]);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token") || "";
+    setToken(storedToken);
+    if (storedToken) {
+      setDecodedToken(jwtDecode<any>(storedToken));
+    }
+  }, []);
+
+  // Initialize socket connection
+  useEffect(() => {
+    if (decodedToken?.id && !isConnected) {
+      initSocket(decodedToken.id);
+    }
+  }, [initSocket, isConnected, decodedToken]);
+
   const handlePlaylistSelect = (playlist: Playlist) => {
     setSelectedPlaylist(playlist)
   }
