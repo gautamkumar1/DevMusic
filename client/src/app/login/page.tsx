@@ -23,7 +23,7 @@ export default function LoginPage() {
   }
   useEffect(() => {
     if(success){
-      router.push("/home")
+      router.push("/")
     }
   }, [success])
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

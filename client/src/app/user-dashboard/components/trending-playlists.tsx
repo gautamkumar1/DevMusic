@@ -46,6 +46,9 @@ export function TrendingPlaylists({ onPlaylistSelect }: TrendingPlaylistsProps) 
               <p className="text-gray-500 text-xs">
                 {album.songs.length} songs • Released in {album.releaseYear}
               </p>
+              <p className="text-gray-400 text-xs mt-2">
+          Language: <span className="font-semibold">{album.language}</span>
+        </p>
             </div>
           </div>
         ))}

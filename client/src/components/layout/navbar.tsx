@@ -51,7 +51,7 @@ export const Navbar = () => {
  }, [isAdmin]);
   return (
     <header className="shadow-inner bg-opacity-15 w-[90%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl top-5 mx-auto sticky border border-secondary z-40 rounded-2xl flex justify-between items-center p-2 bg-card">
-      <Link href="/" className="font-bold text-lg flex items-center">
+      <Link href="/" prefetch={true} className="font-bold text-lg flex items-center">
         <ChevronsDown className="bg-gradient-to-tr border-secondary from-primary via-primary/70 to-primary rounded-lg w-9 h-9 mr-2 border text-white" />
         DevMusic
       </Link>
@@ -73,7 +73,7 @@ export const Navbar = () => {
             <div>
               <SheetHeader className="mb-4 ml-4">
                 <SheetTitle className="flex items-center">
-                  <Link href="/" className="flex items-center">
+                  <Link href="/" prefetch={true} className="flex items-center">
                     <ChevronsDown className="bg-gradient-to-tr border-secondary from-primary via-primary/70 to-primary rounded-lg w-9 h-9 mr-2 border text-white" />
                     DevMusic
                   </Link>
@@ -89,7 +89,7 @@ export const Navbar = () => {
                     variant="ghost"
                     className="justify-start text-base"
                   >
-                    <Link href={href}>{label}</Link>
+                    <Link href={href} prefetch={true}>{label}</Link>
                   </Button>
                 ))}
               </div>
@@ -109,7 +109,7 @@ export const Navbar = () => {
           <NavigationMenuItem>
             {routeList.map(({ href, label }) => (
               <NavigationMenuLink key={href} asChild>
-                <Link href={href} className="text-base px-2">
+                <Link href={href} prefetch={true} className="text-base px-2">
                   {label}
                 </Link>
               </NavigationMenuLink>
@@ -128,7 +128,7 @@ export const Navbar = () => {
             variant="destructive"
             className="flex items-center space-x-2"
           >
-            <Link href="/admin-dashboard">
+            <Link href="/admin-dashboard" prefetch={true}>
               <Shield className="w-4 h-4 mr-1" />
               <span>Admin Dashboard</span>
             </Link>
@@ -136,7 +136,7 @@ export const Navbar = () => {
         )}
         {isLoggedIn && (
           <Button asChild variant="default" size="sm" className="flex items-center space-x-2">
-            <Link href="/home">
+            <Link href="/user-dashboard" prefetch={true}>
               <User className="w-4 h-4 mr-1" />
               <span>User Dashboard</span>
             </Link>
@@ -149,6 +149,7 @@ export const Navbar = () => {
             aria-label="View on GitHub"
             href="https://github.com/gautamkumar1"
             target="_blank"
+            prefetch={true}
           >
             <Github className="size-5" />
           </Link>

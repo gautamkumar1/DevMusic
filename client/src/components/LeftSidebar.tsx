@@ -15,7 +15,7 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import { useMusicPlayer } from "@/app/home/components/useMusicPlayer";
+import { useMusicPlayer } from "@/app/user-dashboard/components/useMusicPlayer";
 import { jwtDecode } from "jwt-decode";
 
 const LeftSidebar = () => {
@@ -57,7 +57,8 @@ const LeftSidebar = () => {
         <div className="space-y-2">
           {/* Always show Home */}
           <Link
-            href="/home"
+            href="/user-dashboard"
+            prefetch={true}
             className={cn(
               buttonVariants({
                 variant: "ghost",
@@ -75,6 +76,7 @@ const LeftSidebar = () => {
               {/* Messages */}
               <Link
                 href="/chat"
+                prefetch={true}
                 className={cn(
                   buttonVariants({
                     variant: "ghost",
@@ -88,6 +90,7 @@ const LeftSidebar = () => {
               {/* Create Room */}
               <Link
                 href="/create-room"
+                prefetch={true}
                 className={cn(
                   buttonVariants({
                     variant: "ghost",
@@ -102,6 +105,7 @@ const LeftSidebar = () => {
               {/* Live Coding */}
               <Link
                 href="/create-workspace"
+                prefetch={true}
                 className={cn(
                   buttonVariants({
                     variant: "ghost",
@@ -116,6 +120,7 @@ const LeftSidebar = () => {
               {/* View Profile */}
               <Link
                 href={`/profile/${decodedToken.id}`}
+                prefetch={true}
                 className={cn(
                   buttonVariants({
                     variant: "ghost",
