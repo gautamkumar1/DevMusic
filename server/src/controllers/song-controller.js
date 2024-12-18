@@ -69,18 +69,26 @@ const createSong = async (req, res) => {
 };
   
 const deleteSong = async (req, res) => {
-    try {
-        const {songId} = req.body;
-        const isSongDeleted = await song.findByIdAndDelete(songId);
-        if(!isSongDeleted){
-            return res.status(404).json({message: "Song not found"});
-        }
-        res.status(200).json({message: "Song deleted successfully"});
-    } catch (error) {
-        console.log("Error in deleteSong", error);
-        return res.status(500).json({message: error.message});
-        
-    }
+  try {
+      const { songId } = req.body;
+
+      // Delete the song from the Song collection
+      const isSongDeleted = await song.findByIdAndDelete(songId);
+      if (!isSongDeleted) {
+          return res.status(404).json({ message: "Song not found" });
+      }
+
+      // Remove the songId from the `songs` array in all associated albums
+      await albumModel.updateMany(
+          { songs: songId }, // Find albums with the songId in their `songs` array
+          { $pull: { songs: songId } } // Remove the songId from the `songs` array
+      );
+
+      res.status(200).json({ message: "Song deleted successfully and removed from albums" });
+  } catch (error) {
+      console.log("Error in deleteSong", error);
+      return res.status(500).json({ message: error.message });
+  }
 };
 
 const allSongs = async (req, res) => {
