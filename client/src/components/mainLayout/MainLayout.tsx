@@ -8,7 +8,7 @@ import {
 // import AudioPlayer from "../AudioPlayer";
 import LeftSidebar from "../LeftSidebar";
 import FriendsActivity from "../FriendsActivity";
-import PlaybackControls from "../PlaybackControls";
+
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -27,7 +27,6 @@ const MAIN_PANEL_DESKTOP_SIZE = 60;
 const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
-  // Detect if the viewport is mobile
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -36,13 +35,11 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
   }, []);
 
   return (
-    <div className="h-screen bg-black text-white flex flex-col">
-      {/* Main Resizable Panel Group */}
-      <ResizablePanelGroup direction="horizontal" className="flex-1 flex h-full overflow-auto p-2">
-        {/* Audio Player at the Top */}
-        {/* <AudioPlayer /> */}
-
-        {/* Left Sidebar */}
+    <div className="h-screen bg-black text-white flex flex-col overflow-hidden">
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="flex-1 flex h-full overflow-hidden"
+      >
         <ResizablePanel
           defaultSize={LEFT_PANEL_DEFAULT_SIZE}
           minSize={isMobile ? LEFT_PANEL_MIN_SIZE_MOBILE : LEFT_PANEL_MIN_SIZE_DESKTOP}
@@ -50,39 +47,29 @@ const MainLayout: FC<MainLayoutProps> = ({ children }) => {
         >
           <LeftSidebar />
         </ResizablePanel>
+        <ResizableHandle className="w-2 bg-gray-800" />
 
-        {/* Divider/Handle for resizing */}
-        <ResizableHandle
-          className="w-2 bg-black rounded-lg transition-colors"
-          aria-label="Resize Left Sidebar"
-        />
-
-        {/* Main Content Area */}
-        <ResizablePanel defaultSize={isMobile ? MAIN_PANEL_MOBILE_SIZE : MAIN_PANEL_DESKTOP_SIZE}>
+        <ResizablePanel
+          defaultSize={isMobile ? MAIN_PANEL_MOBILE_SIZE : MAIN_PANEL_DESKTOP_SIZE}
+          minSize={0}
+          className="overflow-hidden flex flex-col"
+        >
           {children}
         </ResizablePanel>
 
-        {/* Right Sidebar (Desktop only) */}
         {!isMobile && (
           <>
-            <ResizableHandle
-              className="w-2 bg-black rounded-lg transition-colors"
-              aria-label="Resize Right Sidebar"
-            />
+            <ResizableHandle className="w-2 bg-gray-800" />
             <ResizablePanel
               defaultSize={RIGHT_PANEL_DEFAULT_SIZE}
               minSize={0}
               maxSize={RIGHT_PANEL_MAX_SIZE}
-              collapsedSize={0}
             >
               <FriendsActivity />
             </ResizablePanel>
           </>
         )}
       </ResizablePanelGroup>
-
-      {/* Playback Controls at the Bottom */}
-      {/* <PlaybackControls /> */}
     </div>
   );
 };

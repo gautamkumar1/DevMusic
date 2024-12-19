@@ -6,7 +6,9 @@ import { useEffect, useState } from "react";
 import PrivateRoute from "@/components/PrivateRoute";
 import { jwtDecode } from "jwt-decode";
 import { useChatStore } from "@/store/useChatStore";
-import PlaylistDetails from "./components/playlist-details";
+
+import { useRouter } from "next/navigation";
+import PlaylistDetailsPage from "./playlist-details/[albumId]/page";
 interface Song {
   id: number
   title: string
@@ -15,15 +17,16 @@ interface Song {
 }
 
 interface Playlist {
-  id: number
-  _id: string
-  title: string
-  description: string
-  imageUrl: string
-  songs: Song[]
+  _id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  albumId: string;
+  songs: Song[];
 }
 
 const Home = () => {
+  const router = useRouter();
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null)
   const [token, setToken] = useState<string>("");
   const [decodedToken, setDecodedToken] = useState<any>(null);
@@ -48,10 +51,12 @@ const Home = () => {
   }, [initSocket, isConnected, decodedToken]);
 
   const handlePlaylistSelect = (playlist: Playlist) => {
+    router.push(`/user-dashboard/playlist-details/${playlist._id}`);
     setSelectedPlaylist(playlist)
   }
 
   const handleBackToTrending = () => {
+    router.push('/user-dashboard');
     setSelectedPlaylist(null)
   }
 
@@ -60,7 +65,7 @@ const Home = () => {
       <Header />
       <main>
         {selectedPlaylist ? (
-          <PlaylistDetails playlist={selectedPlaylist} onBack={handleBackToTrending} />
+          <PlaylistDetailsPage />
         ) : (
           <TrendingPlaylists onPlaylistSelect={handlePlaylistSelect} />
         )}
