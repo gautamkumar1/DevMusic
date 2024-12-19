@@ -5,6 +5,7 @@ import useAlbumStore from '@/store/useAlbumStore';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { IconMenu, IconSearch } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
 
 // Define the Album interface
 interface Album {
@@ -19,6 +20,7 @@ interface Album {
 
 export function Header() {
   const { albums, loading, error, fetchAlbums } = useAlbumStore();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredAlbums, setFilteredAlbums] = useState<Album[]>([]); // Use the Album type here
 
@@ -90,7 +92,7 @@ export function Header() {
                     <div
                       key={album._id}
                       className="bg-zinc-800 rounded-lg shadow-md overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 focus:scale-105 focus:outline-none cursor-pointer"
-                      onClick={() => console.log(`Selected album: ${album.title}`)}
+                      onClick={() => router.push(`/user-dashboard/playlist-details/${album._id}`)}
                       tabIndex={0}
                       role="button"
                       aria-label={`Open album ${album.title}`}
