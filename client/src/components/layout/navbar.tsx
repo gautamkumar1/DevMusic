@@ -1,5 +1,5 @@
 "use client";
-import { ChevronsDown, Github, Menu, User, Shield } from "lucide-react";
+import { ChevronsDown, Github, Menu, User, Shield, Music2, Headphones, MusicIcon } from "lucide-react";
 import React, { useEffect } from "react";
 import {
   Sheet,
@@ -52,18 +52,43 @@ export const Navbar = () => {
   return (
     <header className="shadow-inner bg-opacity-15 w-[90%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl top-5 mx-auto sticky border border-secondary z-40 rounded-2xl flex justify-between items-center p-2 bg-card">
       <Link href="/" prefetch={true} className="font-bold text-lg flex items-center">
-        <ChevronsDown className="bg-gradient-to-tr border-secondary from-primary via-primary/70 to-primary rounded-lg w-9 h-9 mr-2 border text-white" />
-        DevMusic
+        <div className="bg-gradient-to-tr from-primary via-primary/70 to-primary rounded-lg p-2 mr-2 border border-secondary">
+          <Headphones className="w-6 h-6 text-white" />
+        </div>
+        <span className="bg-gradient-to-r from-primary to-orange-500 bg-clip-text text-transparent">
+          DevMusic
+        </span>
       </Link>
 
       {/* <!-- Mobile --> */}
-      <div className="flex items-center lg:hidden">
+      <div className="flex items-center gap-2 lg:hidden">
+        {/* Dashboard Buttons for Mobile */}
+        {isAdmin && (
+          <Button
+            asChild
+            size="sm"
+            variant="destructive"
+            className="flex items-center"
+          >
+            <Link href="/admin-dashboard" prefetch={true}>
+              <Shield className="w-4 h-4 mr-1" />
+              <span className="hidden sm:inline">Admin</span>
+            </Link>
+          </Button>
+        )}
+        {isLoggedIn && (
+          <Button asChild variant="default" size="sm" className="flex items-center">
+            <Link href="/user-dashboard" prefetch={true}>
+              <User className="w-4 h-4 mr-1" />
+              <span className="hidden sm:inline">Profile</span>
+            </Link>
+          </Button>
+        )}
+
+        {/* Mobile Menu Button */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Menu
-              onClick={() => setIsOpen(!isOpen)}
-              className="cursor-pointer lg:hidden"
-            />
+            <Menu className="cursor-pointer" />
           </SheetTrigger>
 
           <SheetContent
@@ -74,8 +99,12 @@ export const Navbar = () => {
               <SheetHeader className="mb-4 ml-4">
                 <SheetTitle className="flex items-center">
                   <Link href="/" prefetch={true} className="flex items-center">
-                    <ChevronsDown className="bg-gradient-to-tr border-secondary from-primary via-primary/70 to-primary rounded-lg w-9 h-9 mr-2 border text-white" />
-                    DevMusic
+                    <div className="bg-gradient-to-tr from-primary via-primary/70 to-primary rounded-lg p-2 mr-2 border border-secondary">
+                      <Headphones className="w-6 h-6 text-white" />
+                    </div>
+                    <span className="bg-gradient-to-r from-primary to-orange-500 bg-clip-text text-transparent">
+                      DevMusic
+                    </span>
                   </Link>
                 </SheetTitle>
               </SheetHeader>
@@ -120,7 +149,6 @@ export const Navbar = () => {
 
       {/* Right-side controls */}
       <div className="hidden lg:flex items-center space-x-4">
-        {/* Admin and User Dashboard Buttons */}
         {isAdmin && (
           <Button
             asChild
@@ -143,14 +171,8 @@ export const Navbar = () => {
           </Button>
         )}
 
-        {/* GitHub and Theme Toggle Buttons */}
-        <Button asChild size="sm" variant="ghost" aria-label="View on GitHub">
-          <Link
-            aria-label="View on GitHub"
-            href="https://github.com/gautamkumar1"
-            target="_blank"
-            prefetch={true}
-          >
+        <Button asChild size="sm" variant="ghost">
+          <Link href="https://github.com/gautamkumar1" target="_blank">
             <Github className="size-5" />
           </Link>
         </Button>

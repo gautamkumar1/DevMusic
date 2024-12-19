@@ -1,19 +1,11 @@
 import { cn } from "@/lib/utils";
 import {
-  IconAdjustmentsBolt,
   IconAdOff,
   IconCalendarEvent,
-  IconCloud,
   IconCode,
-  IconCurrencyDollar,
-  IconEaseInOut,
-  IconHeart,
-  IconHelp,
   IconMessageChatbot,
   IconMusic,
-  IconRouteAltLeft,
   IconTerminal,
-  IconTerminal2,
   IconUsers,
   IconUserSearch,
 } from "@tabler/icons-react";

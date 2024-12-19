@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-// import { HomeIcon, MessageCircle } from ";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
@@ -8,17 +7,9 @@ import useUserStore from "@/store/useUserStore";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Slider } from "./ui/slider";
-// import {
-//   Play,
-//   Pause,
-//   SkipBack,
-//   SkipForward,
-//   Volume2,
-//   VolumeX,
-// } from "lucide-react";
 import { useMusicPlayer } from "@/app/user-dashboard/components/useMusicPlayer";
 import { jwtDecode } from "jwt-decode";
-import { IconEyePause, IconHomeBitcoin, IconMessageCircle, IconPlayerPause, IconPlayerPlay, IconPlayerSkipBack, IconPlayerSkipForward, IconVolume2, IconVolumeOff } from "@tabler/icons-react";
+import {IconHomeBitcoin, IconMessageCircle, IconPlayerPause, IconPlayerPlay, IconPlayerSkipBack, IconPlayerSkipForward, IconVolume2, IconVolumeOff } from "@tabler/icons-react";
 
 const LeftSidebar = () => {
   const [token, setToken] = useState<string | null>(null);

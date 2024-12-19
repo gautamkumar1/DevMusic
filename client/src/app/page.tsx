@@ -40,8 +40,8 @@ export default function Home() {
     <>
       <Navbar />
       <HeroSection />
-      <Playlist />
       <FeatureSection />
+      <Playlist />
       <AccordionExample />
       <Testimonials />
       <FooterSection />

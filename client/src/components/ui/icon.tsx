@@ -1,17 +1,24 @@
 import { icons } from "lucide-react";
 
+interface IconProps {
+  name: keyof typeof icons;
+  color?: string;
+  size?: number;
+  className?: string;
+}
+
 export const Icon = ({
   name,
-  color,
-  size,
+  color = "currentColor",
+  size = 24,
   className,
-}: {
-  name: keyof typeof icons;
-  color: string;
-  size: number;
-  className?: string;
-}) => {
-  const LucideIcon = icons[name as keyof typeof icons];
+}: IconProps) => {
+  const LucideIcon = icons[name];
+
+  if (!LucideIcon) {
+    console.error(`Icon "${name}" does not exist in lucide-react icons.`);
+    return null;
+  }
 
   return <LucideIcon color={color} size={size} className={className} />;
 };

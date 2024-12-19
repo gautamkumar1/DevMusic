@@ -9,29 +9,6 @@ import { useEffect, useState } from "react";
 import { IconMusic, IconUsers } from "@tabler/icons-react";
 
 // Hardcoded user data
-const hardcodedUsers = [
-  {
-    _id: "1",
-    fullName: "Alice Johnson",
-    imageUrl: "https://via.placeholder.com/150",
-    isOnline: true,
-    activity: "Playing Chill Beats by Lo-Fi Studio",
-  },
-  {
-    _id: "2",
-    fullName: "Bob Smith",
-    imageUrl: "https://via.placeholder.com/150",
-    isOnline: false,
-    activity: "Idle",
-  },
-  {
-    _id: "3",
-    fullName: "Charlie Brown",
-    imageUrl: "https://via.placeholder.com/150",
-    isOnline: true,
-    activity: "Playing Workout Hits by Top Artists",
-  },
-];
 
 const FriendsActivity: React.FC = () => {
   const { users, fetchUsers, onlineUsers, userActivities } = useChatStore();
