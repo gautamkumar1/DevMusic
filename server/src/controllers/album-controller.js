@@ -59,5 +59,17 @@ const getAllAlbums = async (req, res) => {
         return res.status(500).json({ message: error.message });
 	}
 };
-
-module.exports = { createAlbum, deleteAlbum,getAllAlbums };
+const getAlbumById = async (req, res) => {
+    try {
+      const {albumId} = req.params;
+      const album = await albumModel.findById(albumId);
+      if(!album){
+          return res.status(404).json({message: "Album not found"});
+      }
+      res.status(200).json({album: album});
+    } catch (error) {
+      console.log("Error in getAlbumById", error);
+      return res.status(500).json({message: error.message});
+    }
+  }
+module.exports = { createAlbum, deleteAlbum,getAllAlbums,getAlbumById };

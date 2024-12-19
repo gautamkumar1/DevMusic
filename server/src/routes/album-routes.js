@@ -1,6 +1,6 @@
 const express = require("express");
 const { isAuthenticated, isAuthorized } = require("../middleware/auth-middleware");
-const { createAlbum, deleteAlbum, getAllAlbums } = require("../controllers/album-controller");
+const { createAlbum, deleteAlbum, getAllAlbums, getAlbumById } = require("../controllers/album-controller");
 const upload = require("../middleware/multer-middleware");
 const router = express.Router();
 
@@ -10,4 +10,5 @@ router.post("/admin/albumCreate",isAuthenticated,isAuthorized,upload.fields([   
 }]),createAlbum)
 router.delete("/admin/albumDelete",isAuthenticated,isAuthorized,deleteAlbum)
 router.get("/albums",getAllAlbums)
+router.get("/getAlbumById/:albumId",isAuthenticated,getAlbumById)
 module.exports = router;
