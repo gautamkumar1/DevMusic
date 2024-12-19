@@ -5,7 +5,7 @@ const getFeaturedSongs = async (req, res) => {
 		// fetch 6 random songs using mongodb's aggregation pipeline
 		const songs = await Song.aggregate([
 			{
-				$sample: { size: 6 },
+				$sample: { size: 3 },
 			},
 			{
 				$project: {
@@ -30,7 +30,7 @@ const getFeaturedAlbums = async (req, res) => {
 		// fetch 6 random songs using mongodb's aggregation pipeline
 		const albums = await Album.aggregate([
 			{
-				$sample: { size: 6 },
+				$sample: { size: 3 },
 			},
 			{
 				$project: {
@@ -39,6 +39,9 @@ const getFeaturedAlbums = async (req, res) => {
 					artist: 1,
 					imageUrl: 1,
 					audioUrl: 1,
+					language: 1,
+					releaseYear: 1,
+					songs: 1,
 				},
 			},
 		]);
