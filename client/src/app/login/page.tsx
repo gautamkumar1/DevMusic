@@ -16,16 +16,16 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
-  const {isLoading,success,loginUser} = useUserStore();
+  const {isLoading,loginSuccess,loginUser} = useUserStore();
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     await loginUser(loginData);
   }
   useEffect(() => {
-    if(success){
+    if(loginSuccess){
       router.push("/")
     }
-  }, [success])
+  }, [loginSuccess])
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setLoginData({ ...loginData, [e.target.id]: e.target.value });
   };

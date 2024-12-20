@@ -9,7 +9,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Loader2, MusicIcon, Upload } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import useUserStore from '@/store/useUserStore'
+import { useRouter } from 'next/navigation'
 export default function RegisterPage() {
+  const router = useRouter();
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [skillInput, setSkillInput] = useState('');
   const [formData, setFormData] = useState({
@@ -25,7 +27,7 @@ export default function RegisterPage() {
   });
   const fileInputRef = useRef<any>(null);
   const [profile_picture, setProfileImage] = useState<File | null>(null);
-  const { isLoading,registerUser } = useUserStore();
+  const { isLoading,registerUser,registerSuccess } = useUserStore();
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -58,6 +60,9 @@ export default function RegisterPage() {
     console.log(`updatedFormData: ${JSON.stringify(updatedFormData)}`);
     
     await registerUser(updatedFormData,profile_picture);
+    if(registerSuccess){
+      router.push("/user-dashboard");
+    }
   };
 
   const skills = [
