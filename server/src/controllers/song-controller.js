@@ -1,6 +1,8 @@
 const song = require("../models/song-model");
 const albumModel = require("../models/album-model");
 const { uploadOnCloudinary } = require("../utils/cloudinary");
+const NodeCache = require("node-cache");
+const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 }); // TTL of 1 hour
 
 const createSong = async (req, res) => {
     try {
@@ -36,7 +38,12 @@ const createSong = async (req, res) => {
   
       console.log("Image URL Upload:", imageUrlUpload);
       console.log("Audio URL Upload:", audioUrlPathUpload);
-  
+      const cacheKey1 = "allSongs";
+      cache.del(cacheKey1);
+      const cacheKey2 = `songsByAlbum-${req.params.albumId}`;
+      cache.del(cacheKey2);
+      const cacheKey3 = "stats";
+      cache.del(cacheKey3); // Delete stats cache
       // Create the song document
       const songCreated = await song.create({
         title,
@@ -77,7 +84,10 @@ const deleteSong = async (req, res) => {
       if (!isSongDeleted) {
           return res.status(404).json({ message: "Song not found" });
       }
-
+      const cacheKey1 = "allSongs";
+      cache.del(cacheKey1);
+      const cacheKey2 = `songsByAlbum-${req.params.albumId}`;
+      cache.del(cacheKey2);
       // Remove the songId from the `songs` array in all associated albums
       await albumModel.updateMany(
           { songs: songId }, // Find albums with the songId in their `songs` array
@@ -95,12 +105,22 @@ const allSongs = async (req, res) => {
     try {
         // -1 = Descending => newest -> oldest
 		// 1 = Ascending => oldest -> newest
+    const cacheKey = "allSongs";
+    const cachedData = cache.get(cacheKey);
+    if(cachedData){
+      console.log("Returning from cache");
+        return res.status(200).json({success: true, totalSongs: cachedData.totalSongs,allSong: cachedData.allSong});
+    }
+
+    console.log("Returning from database");
 		const allSong = await song.find().sort({ createdAt: -1 });
         if(!allSong){
             return res.status(404).json({message: "Song not found"});
         }
+        const songsObject = allSong.map(song => song.toObject());
         const totalSongs = allSong.length;
-        res.status(200).json({totalSongs: totalSongs, allSong: allSong});
+        cache.set(cacheKey, {totalSongs: totalSongs, allSong: songsObject});
+        res.status(200).json({totalSongs: totalSongs, allSong: songsObject});
     } catch (error) {
         console.log("Error in allSongs", error);
         return res.status(500).json({message: error.message});
@@ -108,13 +128,22 @@ const allSongs = async (req, res) => {
 }
 const getSongsByAlbum = async (req, res) => {
   try {
+    const cacheKey = `songsByAlbum-${req.params.albumId}`;
+    const cachedData = cache.get(cacheKey);
+    if(cachedData){
+      console.log("Returning from cache");
+        return res.status(200).json({success: true, totalSongsInThisAlbum: cachedData.totalSongsInThisAlbum,allSong: cachedData.allSong});
+    }
     const {albumId} = req.params;
     const allSong = await song.find({albumId}).sort({ createdAt: -1 });
     if(!allSong){
         return res.status(404).json({message: "Song not found for this album"});
     }
-    const totalSongsInThisAlbum = allSong.length;
-    res.status(200).json({totalSongsInThisAlbum: totalSongsInThisAlbum, allSong: allSong});
+    console.log("Returning from database");
+    const totalSongsInThisAlbum = allSong.length; 
+    const songsObject = allSong.map(song => song.toObject());
+    cache.set(cacheKey, {totalSongsInThisAlbum: totalSongsInThisAlbum, allSong: songsObject});
+    res.status(200).json({totalSongsInThisAlbum: totalSongsInThisAlbum, allSong: songsObject});
   } catch (error) {
     
   }
