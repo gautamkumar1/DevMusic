@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Play, Pause, ChevronLeft } from 'lucide-react';
+import { Play, Pause, ChevronLeft, Music2, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMusicPlayer } from '@/app/user-dashboard/components/useMusicPlayer';
 import { useParams, useRouter } from 'next/navigation';
@@ -106,83 +106,172 @@ const PlaylistDetails = () => {
   const handleBack = () => {
     router.push('/user-dashboard');
   };
+  const formatDuration = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
+  const getTotalDuration = () => {
+    const totalSeconds = allSongs.reduce((acc, song) => acc + song.duration, 0);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    return `${hours} hr ${minutes} min`;
+  };
   return (
-    <div className="min-h-screen bg-[#18181B] text-gray-200 relative">
-  <div className="container mx-auto p-6 flex flex-col h-screen">
-    {/* Header */}
-    <div className="flex items-center">
+    <div className="min-h-screen bg-gradient-to-b from-[#18181B] to-[#09090b] text-gray-200">
+    <div className="container mx-auto px-4 py-6 h-screen flex flex-col">
+      {/* Header with navigation */}
       <Button
         variant="ghost"
         size="icon"
-        onClick={handleBack}
-        className="hover:bg-gray-700 rounded-full"
+        onClick={() => router.push('/user-dashboard')}
+        className="hover:bg-gray-700/50 rounded-full"
       >
         <ChevronLeft className="w-6 h-6 text-gray-400" />
       </Button>
-    </div>
 
-    {/* Playlist Details */}
-    <div className="flex mt-8">
-      <Image
-        unoptimized
-        src={playlistDetails.imageUrl || '/placeholder.jpg'}
-        alt={playlistDetails.title || 'No Title'}
-        width={300}
-        height={300}
-        className="rounded-lg"
-      />
-      <div className="ml-6">
-        <h1 className="text-4xl font-bold text-white">{playlistDetails.title}</h1>
-        <p className="mt-4 text-gray-400">{playlistDetails.description}</p>
-        <Button
-          onClick={isPlaying ? togglePlayPause : handlePlayAll}
-          className="mt-6 bg-orange-600 hover:bg-orange-500 text-white"
-        >
-          {isPlaying ? <Pause className="mr-2" /> : <Play className="mr-2" />}
-          <span>{isPlaying ? 'Pause All' : 'Play All'}</span>
-        </Button>
-      </div>
-    </div>
+      {/* Hero section with playlist details */}
+      <div className="flex flex-col md:flex-row items-start gap-8 my-8">
+        <div className="relative group">
+          <Image
+            unoptimized
+            src={playlistDetails.imageUrl || '/placeholder.jpg'}
+            alt={playlistDetails.title || 'No Title'}
+            width={300}
+            height={300}
+            className="rounded-xl shadow-2xl transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center">
+            <Button
+              onClick={isPlaying ? togglePlayPause : handlePlayAll}
+              className="bg-orange-600/90 hover:bg-orange-500 text-white scale-90 hover:scale-100 transition-transform duration-300"
+              size="lg"
+            >
+              {isPlaying ? <Pause className="mr-2 h-6 w-6" /> : <Play className="mr-2 h-6 w-6" />}
+              <span>{isPlaying ? 'Pause' : 'Play'}</span>
+            </Button>
+          </div>
+        </div>
 
-    {/* Songs Section */}
-    <div className="mt-8 flex-1 bg-[#202023] p-4 rounded-lg overflow-y-auto">
-      {visibleSongs.map((song) => (
-        <div
-          key={song._id}
-          className={`flex items-center justify-between p-2 rounded-lg hover:bg-[#2C2C2F] ${
-            currentSong?._id === song._id && 'bg-[#2C2C2F]'
-          }`}
-        >
-          <div className="flex items-center">
-            <Image
-              unoptimized
-              src={song.imageUrl}
-              alt={song.title}
-              width={50}
-              height={50}
-              className="rounded"
-            />
-            <div className="ml-4">
-              <p className="font-semibold text-white">{song.title}</p>
-              <p className="text-gray-400 text-sm">{song.artist}</p>
+        <div className="flex-1">
+          <div className="space-y-4">
+            <h1 className="text-5xl font-bold text-white tracking-tight">{playlistDetails.title}</h1>
+            <p className="text-lg text-gray-400 max-w-2xl">{playlistDetails.description}</p>
+            <div className="flex items-center gap-2 text-sm text-gray-400">
+              <Music2 className="w-4 h-4" />
+              <span>{allSongs.length} songs •</span>
+              <span>{getTotalDuration()}</span>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => (currentSong?._id === song._id ? togglePlayPause() : playSong(song))}
-            className="text-gray-400 hover:text-white"
-          >
-            {currentSong?._id === song._id && isPlaying ? <Pause /> : <Play />}
-          </Button>
         </div>
-      ))}
-      {/* Scroll End Target */}
-      <div id="scroll-end" className="h-10"></div>
+      </div>
+
+      {/* Songs list with custom scrollbar */}
+      <div className="flex-1 bg-[#202023]/50 rounded-xl backdrop-blur-sm overflow-hidden flex flex-col">
+        {/* Headers - Fixed */}
+        <div className="grid grid-cols-[auto,1fr,auto] gap-4 px-6 py-3 text-sm text-gray-400 border-b border-gray-700/50">
+          <span>#</span>
+          <span>TITLE</span>
+          <span className="flex items-center gap-2 pr-2">
+            <Clock className="w-4 h-4" />
+          </span>
+        </div>
+
+        {/* Songs list with custom scrollbar */}
+        <div className="flex-1 overflow-y-auto px-2 scrollbar-container">
+          <style jsx global>{`
+            .scrollbar-container {
+              scrollbar-width: thin;
+              scrollbar-color: #4B5563 transparent;
+            }
+            
+            .scrollbar-container::-webkit-scrollbar {
+              width: 6px;
+            }
+            
+            .scrollbar-container::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            
+            .scrollbar-container::-webkit-scrollbar-thumb {
+              background-color: #4B5563;
+              border-radius: 20px;
+              border: transparent;
+            }
+            
+            .scrollbar-container::-webkit-scrollbar-thumb:hover {
+              background-color: #6B7280;
+            }
+          `}</style>
+          
+          <div className="space-y-1 py-2">
+            {visibleSongs.map((song, index) => (
+              <div
+                key={song._id}
+                className={`grid grid-cols-[auto,1fr,auto] gap-4 p-3 rounded-lg transition-colors duration-200 
+                  ${currentSong?._id === song._id ? 'bg-orange-600/10' : 'hover:bg-gray-800/50'}`}
+              >
+                <div className="w-8 flex items-center justify-center text-gray-400">
+                  {currentSong?._id === song._id ? (
+                    <div className="w-4 h-4 flex items-center justify-center">
+                      {isPlaying ? (
+                        <span className="animate-pulse">▶</span>
+                      ) : (
+                        <span>{index + 1}</span>
+                      )}
+                    </div>
+                  ) : (
+                    <span>{index + 1}</span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <Image
+                    unoptimized
+                    src={song.imageUrl}
+                    alt={song.title}
+                    width={40}
+                    height={40}
+                    className="rounded-md"
+                  />
+                  <div>
+                    <p className={`font-medium ${currentSong?._id === song._id ? 'text-orange-500' : 'text-white'}`}>
+                      {song.title}
+                    </p>
+                    <p className="text-sm text-gray-400">{song.artist}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <span className="text-sm text-gray-400 w-12">
+                    {formatDuration(song.duration)}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => (currentSong?._id === song._id ? togglePlayPause() : playSong(song))}
+                    className={`text-gray-400 hover:text-white ${
+                      currentSong?._id === song._id ? 'text-orange-500' : ''
+                    }`}
+                  >
+                    {currentSong?._id === song._id && isPlaying ? (
+                      <Pause className="w-5 h-5" />
+                    ) : (
+                      <Play className="w-5 h-5" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            ))}
+            
+            {/* Scroll End Target */}
+            <div id="scroll-end" className="h-10" />
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
   );
 }

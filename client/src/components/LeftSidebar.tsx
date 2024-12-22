@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { Slider } from "./ui/slider";
 import { useMusicPlayer } from "@/app/user-dashboard/components/useMusicPlayer";
 import { jwtDecode } from "jwt-decode";
-import {IconHomeBitcoin, IconMessageCircle, IconPlayerPause, IconPlayerPlay, IconPlayerSkipBack, IconPlayerSkipForward, IconVolume2, IconVolumeOff } from "@tabler/icons-react";
+import {IconDeviceLaptop, IconHomeBitcoin, IconLogout, IconMessageCircle, IconPlayerPause, IconPlayerPlay, IconPlayerSkipBack, IconPlayerSkipForward, IconTools, IconUserCircle, IconVolume2, IconVolumeOff } from "@tabler/icons-react";
 
 const LeftSidebar = () => {
   const [token, setToken] = useState<string | null>(null);
@@ -106,8 +106,8 @@ const LeftSidebar = () => {
                   })
                 )}
               >
-                <span className="mr-2 w-5 h-5">🛠️</span>
-                <span className="hidden md:inline">Create Room</span>
+                 <IconTools className="mr-2 w-5 h-5" />
+                 <span className="hidden md:inline">Create Room</span>
               </Link>
 
               {/* Live Coding */}
@@ -121,7 +121,7 @@ const LeftSidebar = () => {
                   })
                 )}
               >
-                <span className="mr-2 w-5 h-5">🎥</span>
+                <IconDeviceLaptop className="mr-2 w-5 h-5" />
                 <span className="hidden md:inline">Live Coding</span>
               </Link>
 
@@ -136,8 +136,8 @@ const LeftSidebar = () => {
                   })
                 )}
               >
-                <span className="mr-2 w-5 h-5">👤</span>
-                <span className="hidden md:inline">View Profile</span>
+                 <IconUserCircle className="mr-2 w-5 h-5" />
+                 <span className="hidden md:inline">View Profile</span>
               </Link>
 
               {/* Logout */}
@@ -150,7 +150,7 @@ const LeftSidebar = () => {
                   })
                 )}
               >
-                <span className="mr-2 w-5 h-5">🚪</span>
+                <IconLogout className="mr-2 w-5 h-5" />
                 <span className="hidden md:inline">Logout</span>
               </button>
             </>
