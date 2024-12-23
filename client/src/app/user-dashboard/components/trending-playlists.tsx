@@ -23,7 +23,7 @@ export function TrendingPlaylists({ onPlaylistSelect }: TrendingPlaylistsProps) 
     <section className="py-12 px-4 sm:px-6 lg:px-8">
       {/* show featured albums */}
       <h1
-        className="text-3xl font-extrabold text-center mb-8 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-transparent bg-clip-text animate-bounce"
+        className="text-3xl font-extrabold text-center mb-8 bg-gradient-to-r from-blue-400 via-orange-500 to-pink-500 text-transparent bg-clip-text animate-bounce"
         style={{
           animation: "bounce 2s infinite",
         }}

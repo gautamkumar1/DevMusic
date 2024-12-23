@@ -2,12 +2,13 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import ContactInfo from "../components/ContactInfo";
-import ProfileHeader from "../components/ProfileHeader";
-import Skills from "../components/Skills";
 import { Loader2 } from "lucide-react";
 import MainLayout from "@/components/mainLayout/MainLayout";
 import PrivateRoute from "@/components/PrivateRoute";
+import StatsSection from "../components/StatsSection";
+import SkillsTags from "../components/SkillsTags";
+import ProfileHeader2 from "../components/ProfileHeader2";
+import ActivityGraph from "../components/ActivityGraph";
 
 type Params = {
   userId: string;
@@ -33,12 +34,14 @@ type UserData = {
 type ProfileResponse = {
   message: string;
   userData: UserData;
+  activities: any[];
 };
 
 const ProfilePage = () => {
   const { userId } = useParams<Params>();
   const [profileData, setProfileData] = useState<UserData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [userActivity, setUserActivity] = useState<any[]>([]);
 
   const getUserData = async () => {
     try {
@@ -64,11 +67,36 @@ const ProfilePage = () => {
       toast.error("Failed to fetch user data.");
     }
   };
+  const getUserActivityData = async () => {
+    try {
+      const response = await fetch(`/api/singing-activity-get/${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      });
+      const data: ProfileResponse = await response.json();
+
+      if (!response.ok) {
+        toast.warning(data.message);
+        return;
+      }
+
+      setUserActivity(data.activities); 
+      console.log(`userActivity: ${JSON.stringify(data.activities)}`);
+    } catch (err: any) {
+      console.error(`Error while getting userActivity: ${err.message}`);
+      setError(err.message);
+      toast.error("Failed to fetch user activity.");
+    }
+  };
 
   useEffect(() => {
     if (userId) {
       console.log(`userId: ${userId}`);
       getUserData();
+      getUserActivityData();
     }
   }, [userId]);
 
@@ -81,26 +109,36 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-3xl mx-auto space-y-8">
-        {/* Profile Header */}
-        <ProfileHeader
+    <div className="min-h-screen bg-gray-900 text-white">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <ProfileHeader2
           profile_picture={profileData.profile_picture}
           username={profileData.username}
           bio={profileData.bio}
           role={profileData.role}
         />
+        
+        <div className="mt-6">
+          <SkillsTags skills={profileData.skills} />
+        </div>
 
-        {/* Contact Information */}
-        <ContactInfo
-          email={profileData.email}
-          githubLink={profileData.githubLink}
-          portfolioLink={profileData.portfolioLink}
-          linkedinLink={profileData.linkedInLink}
-        />
+        <div className="mt-8">
+          <ActivityGraph data={userActivity} />
+        </div>
 
-        {/* Skills Section */}
-        <Skills skills={profileData.skills} />
+        <div className="mt-8">
+          <StatsSection
+            currentStreak={15}
+            longestStreak={42}
+            totalListeningTime="1,234 hours"
+            topAlbum={{
+              name: "Random Access Memories",
+              artist: "Daft Punk",
+              coverUrl: "https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=400",
+              listens: 387
+            }}
+          />
+        </div>
       </div>
     </div>
   );
@@ -109,9 +147,7 @@ const ProfilePage = () => {
 const Page = () => {
   return (
     <PrivateRoute>
-    <MainLayout>
       <ProfilePage />
-    </MainLayout>
     </PrivateRoute>
   );
 }

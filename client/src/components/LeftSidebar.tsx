@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
@@ -31,7 +31,8 @@ const LeftSidebar = () => {
     setCurrentTime,
     duration,
   } = useMusicPlayer();
-
+  const [songCount, setSongCount] = useState<{ [key: string]: number }>({});
+  const prevSongRef = useRef<string | null>(null);
   useEffect(() => {
     // Access localStorage only after component mounts
     const storedToken = localStorage.getItem("token");
@@ -40,6 +41,55 @@ const LeftSidebar = () => {
       setDecodedToken(jwtDecode<any>(storedToken));
     }
   }, []);
+  const sendSingingActivity = async (songId: string) => {
+    if (!decodedToken?.id) return;
+
+    const today = new Date();
+    const formattedDate = today.toISOString().split("T")[0]; // yyyy-MM-dd format
+
+    const count = songCount[songId] || 1; // Default to 1 if not yet set
+
+    try {
+      const response = await fetch("/api/singing-activity-create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+       
+        
+        body: JSON.stringify({
+          userId: decodedToken.id,
+          date: formattedDate,
+          count,
+        }),
+      });
+      const responseData = await response.json();
+      console.log(`Response>>>>> ${responseData}`);
+      if (response.ok) {
+        console.log("Singing activity logged successfully");
+      } else {
+        console.error("Failed to log singing activity");
+      }
+    } catch (error) {
+      console.error("Error logging singing activity:", error);
+    }
+  };
+  useEffect(() => {
+    if (currentSong?._id && prevSongRef.current !== currentSong._id) {
+      // Update the count for the current song
+      setSongCount((prev) => ({
+        ...prev,
+        [currentSong._id]: (prev[currentSong._id] || 0) + 1,
+      }));
+
+      // Log the activity
+      sendSingingActivity(currentSong._id);
+
+      // Update the previous song reference
+      prevSongRef.current = currentSong._id;
+    }
+  }, [currentSong]);
 
   useEffect(() => {
     // Access localStorage only after component mounts
