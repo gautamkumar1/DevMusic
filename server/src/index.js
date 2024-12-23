@@ -10,7 +10,7 @@ const authRoutes = require("./routes/auth-routes");
 const albumRoutes = require("./routes/album-routes");
 const songRoutes = require("./routes/song-routes");
 const featuredRoutes = require("./routes/featured-routes");
-
+const SingingActivityRoutes = require("./routes/SingingActivityRoutes");
 const app = express();
 const socketServer = createServer(app);
 
@@ -37,6 +37,7 @@ app.use("/api", authRoutes);
 app.use("/api", albumRoutes);
 app.use("/api", songRoutes);
 app.use("/api", featuredRoutes);
+app.use("/api", SingingActivityRoutes);
 
 const PORT = process.env.PORT || 3001;
 
