@@ -24,6 +24,7 @@ export default function RegisterPage() {
     linkedInLink: "",
     portfolioLink: "",
     skills: "" as string | string[],
+    fullName: "",
   });
   const fileInputRef = useRef<any>(null);
   const [profile_picture, setProfileImage] = useState<File | null>(null);
@@ -92,6 +93,16 @@ export default function RegisterPage() {
                   id="username"
                   placeholder="gautam.x3"
                   value={formData.username}
+                  onChange={handleInputChange}
+                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-400"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="fullName" className="text-gray-200">Full Name</Label>
+                <Input
+                  id="fullName"
+                  placeholder="Gautam Kumar"
+                  value={formData.fullName}
                   onChange={handleInputChange}
                   className="bg-white/5 border-white/10 text-white placeholder:text-gray-400"
                 />

@@ -29,6 +29,7 @@ type UserData = {
   portfolioLink: string;
   createdAt: string;
   updatedAt: string;
+  fullName: string;
 };
 
 type ProfileResponse = {
@@ -113,7 +114,7 @@ const ProfilePage = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <ProfileHeader2
           profile_picture={profileData.profile_picture}
-          username={profileData.username}
+          username={profileData.fullName}
           bio={profileData.bio}
           role={profileData.role}
         />

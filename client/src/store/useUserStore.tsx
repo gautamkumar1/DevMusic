@@ -12,6 +12,7 @@ interface UserFormData {
   linkedInLink: string;
   portfolioLink: string;
   skills: string[]; // Changed from "" to string[]
+  fullName: string;
 }
 interface UserLoginData {
   email: string;
@@ -53,6 +54,7 @@ const useUserStore = create<UserStore>()(
           form.append("linkedInLink", formData.linkedInLink);
           form.append("portfolioLink", formData.portfolioLink);
           form.append("skills", JSON.stringify(formData.skills));
+          form.append("fullName", formData.fullName);
 
           if (profile_picture) {
             form.append("profile_picture", profile_picture);
