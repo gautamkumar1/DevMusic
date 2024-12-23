@@ -9,7 +9,10 @@ const register = async (req, res) => {
     // console.log(`req.body: ${JSON.stringify(req.body)}`);
     
     try {
-        const {username, email, password,bio,isBlocked,isAdmin,skills,linkedInLink,portfolioLink,githubLink,role} = req.body;
+        const {username, email, password,bio,isBlocked,isAdmin,skills,linkedInLink,portfolioLink,githubLink,role,fullName} = req.body;
+        if(fullName.length < 3){
+            return res.status(400).json({message: "Full name must be at least 3 characters"});
+        }
         if(username.length < 3){
             return res.status(400).json({message: "Username must be at least 3 characters"});
         }
@@ -44,7 +47,7 @@ const register = async (req, res) => {
         cache.del(cacheKey);
         const cacheKey2 = "stats";
         cache.del(cacheKey2);
-        const newUser = await User.create({username, email, password,bio,isBlocked,isAdmin,role,skills,profile_picture: profile_pictureUpload || 'https://via.placeholder.com/300x300',portfolioLink: portfolioLink || 'https://portfolio.com',githubLink: githubLink || 'https://github.com',linkedInLink: linkedInLink || 'https://linkedin.com'});
+        const newUser = await User.create({fullName,username, email, password,bio,isBlocked,isAdmin,role,skills,profile_picture: profile_pictureUpload || 'https://via.placeholder.com/300x300',portfolioLink: portfolioLink || 'https://portfolio.com',githubLink: githubLink || 'https://github.com',linkedInLink: linkedInLink || 'https://linkedin.com'});
         const jwtToken = await newUser.generateToken();
         return res.status(200).json({message: "Registered successfully", userData: newUser, token: jwtToken});
     } catch (error) {
