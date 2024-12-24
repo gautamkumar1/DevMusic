@@ -10,7 +10,7 @@ router.post("/user/register",upload.fields([        {
 }]),register)
 
 router.post("/user/login", login);
-router.get("/user/:userId",isAuthenticated,getSingleUser)
+router.get("/user/:userId",getSingleUser)
 router.get("/allUsers",isAuthenticated,getAllUsers)
 router.get("/users/messages/:userId",isAuthenticated,getMessage)
 router.get("/getallstats",isAuthenticated,getStats)

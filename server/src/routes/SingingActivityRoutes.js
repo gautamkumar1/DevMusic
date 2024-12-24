@@ -4,6 +4,7 @@ const SingingActivityController = require('../controllers/SingingActivityControl
 const { isAuthenticated } = require('../middleware/auth-middleware');
 
 router.post('/singing-activity-create', isAuthenticated, SingingActivityController.SingingActivityCreate);
-router.get('/singing-activity-get/:userId', isAuthenticated, SingingActivityController.SingingActivityGet);
+router.get('/singing-activity-get/:userId', SingingActivityController.SingingActivityGet);
+router.post('/add-song-playing-time', isAuthenticated,SingingActivityController.addSongPlayingTime);
 
 module.exports = router;

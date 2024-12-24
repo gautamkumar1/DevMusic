@@ -54,5 +54,27 @@ const SingingActivityGet = async (req, res) => {
       res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 }
-  
-module.exports = { SingingActivityCreate, SingingActivityGet };
+
+const addSongPlayingTime = async (req, res) => {
+  try {
+    const { userId, songPlayingTime, songId } = req.body;
+
+    if (!userId || !songPlayingTime) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+
+    // Check if the user exists and update the arrayOfSongPlayingTime field
+    const userActivity = await SingingActivity.findOneAndUpdate(
+      { userId },
+      { $push: { arrayOfSongPlayingTime: songPlayingTime } ,songId},
+      { new: true, upsert: true } // Create the document if it doesn't exist
+    );
+
+    res.status(200).json({ success: true, userActivity });
+  } catch (error) {
+    console.error('Error adding song playing time:', error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+module.exports = { SingingActivityCreate, SingingActivityGet,addSongPlayingTime };
