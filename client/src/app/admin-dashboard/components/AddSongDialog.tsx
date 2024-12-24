@@ -51,12 +51,11 @@ const AddSongDialog = () => {
             const title = metadata.common.title || "Unknown Title";
             const artist = metadata.common.artist || "Unknown Artist";
             const duration = metadata.format.duration || 0; // duration in seconds
-
             const newSong: NewSong = {
                 title,
                 artist,
                 albumId: "",
-                duration: duration.toFixed(0), // Convert to integer seconds
+                duration: Math.floor(duration).toString(),
             };
 
             setSongs((prev) => [...prev, newSong]);

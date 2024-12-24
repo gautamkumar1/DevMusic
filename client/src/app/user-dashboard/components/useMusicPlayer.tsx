@@ -1,7 +1,7 @@
 'use client';
 
 import { useChatStore } from '@/store/useChatStore';
-import React, { createContext, useState, useRef, useEffect, useContext, ReactNode, useCallback } from 'react';
+import React, { createContext, useState, useRef, useEffect, useContext, ReactNode } from 'react';
 
 interface Song {
   _id: string;
@@ -19,6 +19,7 @@ interface MusicPlayerContextProps {
   isMuted: boolean;
   duration: number;
   currentTime: number;
+  singleSongMode: boolean;
   setCurrentTime: (time: number) => void;
   playSong: (song: Song) => void;
   togglePlayPause: () => void;
@@ -27,6 +28,7 @@ interface MusicPlayerContextProps {
   toggleMute: () => void;
   playNext: () => void;
   playPrevious: () => void;
+  toggleSingleSongMode: () => void;
   setPlaylist: (songs: Song[]) => void;
 }
 
@@ -40,7 +42,8 @@ export const MusicPlayerProvider = ({ children }: { children: ReactNode }) => {
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  
+  const [singleSongMode, setSingleSongMode] = useState(false); // New state
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -59,27 +62,27 @@ export const MusicPlayerProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (audioRef.current) {
       const handleEnded = () => {
-        playNext();
+        if (!singleSongMode) {
+          playNext();
+        } else {
+          stopSong(); // Stop playback if single song mode is enabled
+        }
       };
 
-      audioRef.current.addEventListener('ended', handleEnded);
-
-      // Update current time as the song plays
       const updateCurrentTime = () => {
         setCurrentTime(audioRef.current!.currentTime);
       };
 
+      audioRef.current.addEventListener('ended', handleEnded);
       audioRef.current.addEventListener('timeupdate', updateCurrentTime);
-      
+
       return () => {
         audioRef.current?.removeEventListener('ended', handleEnded);
         audioRef.current?.removeEventListener('timeupdate', updateCurrentTime);
       };
     }
-  }, [playlist, currentIndex]);
+  }, [playlist, currentIndex, singleSongMode]);
 
-  const socket = useChatStore.getState().socket;
-  
   const playSong = (song: Song) => {
     if (audioRef.current) {
       setCurrentSong(song);
@@ -115,7 +118,7 @@ export const MusicPlayerProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const playNext = () => {
-    if (playlist.length > 0 && currentIndex >= 0) {
+    if (playlist.length > 0 && currentIndex >= 0 && !singleSongMode) {
       const nextIndex = (currentIndex + 1) % playlist.length;
       playSong(playlist[nextIndex]);
     }
@@ -128,13 +131,9 @@ export const MusicPlayerProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Send activity updates (optional)
-  if (socket.auth) {
-    socket.emit("update_activity", {
-      userId: socket.auth.userId,
-      activity: isPlaying ? "Playing " + currentSong?.title + " by " + currentSong?.artist : "Idle"
-    });
-  }
+  const toggleSingleSongMode = () => {
+    setSingleSongMode((prev) => !prev);
+  };
 
   const setNewCurrentTime = (time: number) => {
     if (audioRef.current) {
@@ -152,6 +151,7 @@ export const MusicPlayerProvider = ({ children }: { children: ReactNode }) => {
         isMuted,
         duration: currentSong?.duration || 0,
         currentTime,
+        singleSongMode,
         setCurrentTime: setNewCurrentTime,
         playSong,
         togglePlayPause,
@@ -160,6 +160,7 @@ export const MusicPlayerProvider = ({ children }: { children: ReactNode }) => {
         toggleMute,
         playNext,
         playPrevious,
+        toggleSingleSongMode,
         setPlaylist,
       }}
     >

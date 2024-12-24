@@ -9,14 +9,13 @@ import { useRouter } from "next/navigation";
 import { Slider } from "./ui/slider";
 import { useMusicPlayer } from "@/app/user-dashboard/components/useMusicPlayer";
 import { jwtDecode } from "jwt-decode";
-import {IconDeviceLaptop, IconHomeBitcoin, IconLogout, IconMessageCircle, IconPlayerPause, IconPlayerPlay, IconPlayerSkipBack, IconPlayerSkipForward, IconTools, IconUserCircle, IconVolume2, IconVolumeOff } from "@tabler/icons-react";
+import { IconDeviceLaptop, IconHomeBitcoin, IconLogout, IconMessageCircle, IconPlayerPause, IconPlayerPlay, IconPlayerSkipBack, IconPlayerSkipForward, IconTools, IconUserCircle, IconVolume2, IconVolumeOff } from "@tabler/icons-react";
 
 const LeftSidebar = () => {
   const [token, setToken] = useState<string | null>(null);
   const [decodedToken, setDecodedToken] = useState<any>(null);
   const router = useRouter();
   const { isLoggedIn } = useUserStore();
-  const [roomId, setRoomId] = useState<string | null>(null);
   const {
     currentSong,
     isPlaying,
@@ -33,6 +32,10 @@ const LeftSidebar = () => {
   } = useMusicPlayer();
   const [songCount, setSongCount] = useState<{ [key: string]: number }>({});
   const prevSongRef = useRef<string | null>(null);
+  const [songPlayingEndTime, setSongPlayingEndTime] = useState<number>(0);
+  const songEndLogged = useRef<boolean>(false);
+  const currentSongRef = useRef<string | null>(null);
+  const isProcessing = useRef<boolean>(false);
   useEffect(() => {
     // Access localStorage only after component mounts
     const storedToken = localStorage.getItem("token");
@@ -41,6 +44,65 @@ const LeftSidebar = () => {
       setDecodedToken(jwtDecode<any>(storedToken));
     }
   }, []);
+  const addSongPlayingTime = async (endTimeInMinutes: number) => {
+    if (!decodedToken?.id || !currentSong?._id || isProcessing.current) {
+      return;
+    }
+
+    try {
+      isProcessing.current = true;
+      const response = await fetch("/api/add-song-playing-time", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          userId: decodedToken.id,
+          songId: currentSong._id, // Add songId to track unique songs
+          songPlayingTime: endTimeInMinutes
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Song playing time logged successfully");
+        songEndLogged.current = true;
+      } else {
+        console.error("Failed to log song playing time");
+      }
+    } catch (error) {
+      console.error("Error logging song playing time:", error);
+    } finally {
+      isProcessing.current = false;
+    }
+  };
+
+  useEffect(() => {
+    const handleSongEnd = async () => {
+      const isSongEnded = currentTime >= duration - 0.5; // Add small buffer for end detection
+      const isValidDuration = duration > 0;
+      const canLogSong = !songEndLogged.current && !isProcessing.current;
+
+      if (isSongEnded && isValidDuration && canLogSong) {
+        const endTimeInMinutes = Math.floor(duration / 60);
+        await addSongPlayingTime(endTimeInMinutes);
+      }
+    };
+
+    // Only check for song end if the song is actually playing
+    if (isPlaying) {
+      handleSongEnd();
+    }
+  }, [currentTime, duration, isPlaying, currentSong?._id]);
+  useEffect(() => {
+    if (currentSong?._id !== currentSongRef.current) {
+      songEndLogged.current = false;
+      isProcessing.current = false;
+      currentSongRef.current = currentSong?._id || null;
+      setSongPlayingEndTime(0);
+    }
+  }, [currentSong]);
+
   const sendSingingActivity = async (songId: string) => {
     if (!decodedToken?.id) return;
 
@@ -56,8 +118,8 @@ const LeftSidebar = () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-       
-        
+
+
         body: JSON.stringify({
           userId: decodedToken.id,
           date: formattedDate,
@@ -90,13 +152,6 @@ const LeftSidebar = () => {
       prevSongRef.current = currentSong._id;
     }
   }, [currentSong]);
-
-  useEffect(() => {
-    // Access localStorage only after component mounts
-    const storedRoomId = localStorage.getItem("roomId");
-    setRoomId(storedRoomId);
-  }, []);
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     useUserStore.getState().clearState();
@@ -156,8 +211,8 @@ const LeftSidebar = () => {
                   })
                 )}
               >
-                 <IconTools className="mr-2 w-5 h-5" />
-                 <span className="hidden md:inline">Create Room</span>
+                <IconTools className="mr-2 w-5 h-5" />
+                <span className="hidden md:inline">Create Room</span>
               </Link>
 
               {/* Live Coding */}
@@ -186,8 +241,8 @@ const LeftSidebar = () => {
                   })
                 )}
               >
-                 <IconUserCircle className="mr-2 w-5 h-5" />
-                 <span className="hidden md:inline">View Profile</span>
+                <IconUserCircle className="mr-2 w-5 h-5" />
+                <span className="hidden md:inline">View Profile</span>
               </Link>
 
               {/* Logout */}
@@ -288,7 +343,7 @@ const LeftSidebar = () => {
             max={1}
             step={0.01}
             onValueChange={(val) => setVolume(val[0])}
-              className="w-full"
+            className="w-full"
           />
         </div>
       </div>

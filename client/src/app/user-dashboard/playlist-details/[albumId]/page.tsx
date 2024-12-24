@@ -29,7 +29,7 @@ const PlaylistDetails = () => {
   const [allSongs, setAllSongs] = useState<Song[]>([]);
   const [visibleSongs, setVisibleSongs] = useState<Song[]>([]);
   const chunkSize = 10; // Number of songs to load per scroll
-  const { currentSong, playSong, togglePlayPause, isPlaying, setPlaylist } = useMusicPlayer();
+  const { currentSong, playSong, togglePlayPause, isPlaying, setPlaylist, toggleSingleSongMode,singleSongMode } = useMusicPlayer();
 
   // Fetch playlist details and songs
   useEffect(() => {
@@ -96,16 +96,51 @@ const PlaylistDetails = () => {
       if (target) observer.unobserve(target);
     };
   }, [visibleSongs]);
-
+  
   const handlePlayAll = () => {
     if (allSongs.length > 0) {
-      playSong(allSongs[0]); // Start playing the first song in the playlist
+      // Find the index of the current song in the playlist
+      const currentIndex = allSongs.findIndex(song => song._id === currentSong?._id);
+      
+      // If we're at the last song or no song is playing, start from the beginning
+      if (currentIndex === allSongs.length - 1 || currentIndex === -1) {
+        if (singleSongMode) {
+          toggleSingleSongMode(); // Disable single song mode to allow continuous play
+        }
+        playSong(allSongs[0]); // Start from first song
+      } else {
+        // If we're in the middle of the playlist, continue playing
+        if (singleSongMode) {
+          toggleSingleSongMode(); // Disable single song mode to allow continuous play
+        }
+        playSong(currentIndex >= 0 ? allSongs[currentIndex] : allSongs[0]);
+      }
+    }
+  };
+ // Add new useEffect to handle playlist completion
+ useEffect(() => {
+  if (currentSong && isPlaying) {
+    const currentIndex = allSongs.findIndex(song => song._id === currentSong._id);
+    if (currentIndex === allSongs.length - 1) {
+      // If this is the last song, enable single song mode to stop after completion
+      if (!singleSongMode) {
+        toggleSingleSongMode();
+      }
+    }
+  }
+}, [currentSong, isPlaying, allSongs, singleSongMode, toggleSingleSongMode]);
+
+  const handleSongPlay = (song: Song) => {
+    if (currentSong?._id === song._id) {
+      togglePlayPause();
+    } else {
+      if (!singleSongMode) {
+        toggleSingleSongMode(); // Enable single song mode
+      }
+      playSong(song);
     }
   };
 
-  const handleBack = () => {
-    router.push('/user-dashboard');
-  };
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
@@ -142,16 +177,17 @@ const PlaylistDetails = () => {
             height={300}
             className="rounded-xl shadow-2xl transition-transform duration-300 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center">
-            <Button
-              onClick={isPlaying ? togglePlayPause : handlePlayAll}
-              className="bg-orange-600/90 hover:bg-orange-500 text-white scale-90 hover:scale-100 transition-transform duration-300"
-              size="lg"
-            >
-              {isPlaying ? <Pause className="mr-2 h-6 w-6" /> : <Play className="mr-2 h-6 w-6" />}
-              <span>{isPlaying ? 'Pause' : 'Play'}</span>
-            </Button>
-          </div>
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center gap-4">
+      <Button
+        onClick={isPlaying ? togglePlayPause : handlePlayAll}
+        className="bg-orange-600/90 hover:bg-orange-500 text-white scale-90 hover:scale-100 transition-transform duration-300"
+        size="lg"
+      >
+        {isPlaying ? <Pause className="mr-2 h-6 w-6" /> : <Play className="mr-2 h-6 w-6" />}
+        <span>{isPlaying ? 'Pause' : 'Play All'}</span>
+      </Button>
+      
+    </div>
         </div>
 
         <div className="flex-1">
@@ -243,26 +279,28 @@ const PlaylistDetails = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <span className="text-sm text-gray-400 w-12">
-                    {formatDuration(song.duration)}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => (currentSong?._id === song._id ? togglePlayPause() : playSong(song))}
-                    className={`text-gray-400 hover:text-white ${
-                      currentSong?._id === song._id ? 'text-orange-500' : ''
-                    }`}
-                  >
-                    {currentSong?._id === song._id && isPlaying ? (
-                      <Pause className="w-5 h-5" />
-                    ) : (
-                      <Play className="w-5 h-5" />
-                    )}
-                  </Button>
-                </div>
-              </div>
+                
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-400 w-12">
+                {formatDuration(song.duration)}
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleSongPlay(song)}
+                className={`text-gray-400 hover:text-white ${
+                  currentSong?._id === song._id ? 'text-orange-500' : ''
+                }`}
+              >
+                {currentSong?._id === song._id && isPlaying ? (
+                  <Pause className="w-5 h-5" />
+                ) : (
+                  <Play className="w-5 h-5" />
+                )}
+              </Button>
+            </div>
+          
+            </div>
             ))}
             
             {/* Scroll End Target */}
