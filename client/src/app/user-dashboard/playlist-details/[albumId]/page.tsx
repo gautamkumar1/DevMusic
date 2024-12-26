@@ -8,6 +8,8 @@ import { useMusicPlayer } from '@/app/user-dashboard/components/useMusicPlayer';
 import { useParams, useRouter } from 'next/navigation';
 import PrivateRoute from '@/components/PrivateRoute';
 import MainLayout from '@/components/mainLayout/MainLayout';
+import { useChatStore } from '@/store/useChatStore';
+import { jwtDecode } from 'jwt-decode';
 
 interface Song {
   _id: string;
@@ -30,6 +32,23 @@ const PlaylistDetails = () => {
   const [visibleSongs, setVisibleSongs] = useState<Song[]>([]);
   const chunkSize = 10; // Number of songs to load per scroll
   const { currentSong, playSong, togglePlayPause, isPlaying, setPlaylist, toggleSingleSongMode,singleSongMode } = useMusicPlayer();
+  const { isConnected,initSocket} = useChatStore();
+  const [token, setToken] = useState<string>("");
+  const [decodedToken, setDecodedToken] = useState<any>(null);
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token") || "";
+    setToken(storedToken);
+    if (storedToken) {
+      setDecodedToken(jwtDecode<any>(storedToken));
+    }
+  }, []);
+
+  // Initialize socket connection
+  useEffect(() => {
+    if (decodedToken?.id && !isConnected) {
+      initSocket(decodedToken.id);
+    }
+  }, [initSocket, isConnected, decodedToken]);
 
   // Fetch playlist details and songs
   useEffect(() => {

@@ -82,6 +82,7 @@ export const MusicPlayerProvider = ({ children }: { children: ReactNode }) => {
       };
     }
   }, [playlist, currentIndex, singleSongMode]);
+  const socket = useChatStore.getState().socket;
 
   const playSong = (song: Song) => {
     if (audioRef.current) {
@@ -93,7 +94,12 @@ export const MusicPlayerProvider = ({ children }: { children: ReactNode }) => {
       setIsPlaying(true);
     }
   };
-
+if (socket.auth) {
+    socket.emit("update_activity", {
+      userId: socket.auth.userId,
+      activity: isPlaying ? "Playing " + currentSong?.title + " by " + currentSong?.artist : "Idle"
+    });
+  }
   const togglePlayPause = () => {
     if (audioRef.current) {
       if (isPlaying) {
