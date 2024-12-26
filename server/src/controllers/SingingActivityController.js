@@ -1,4 +1,5 @@
 const SingingActivity = require("../models/SingingActivityModel");
+const songPlayingTimeModel = require("../models/song-playingTime")
 const NodeCache = require("node-cache");
 const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 const SingingActivityCreate = async (req, res) => {
@@ -64,7 +65,7 @@ const addSongPlayingTime = async (req, res) => {
     }
 
     // Check if the user exists and update the arrayOfSongPlayingTime field
-    const userActivity = await SingingActivity.findOneAndUpdate(
+    const userActivity = await songPlayingTimeModel.findOneAndUpdate(
       { userId },
       { $push: { arrayOfSongPlayingTime: songPlayingTime } ,songId},
       { new: true, upsert: true } // Create the document if it doesn't exist

@@ -40,7 +40,7 @@ const createSong = async (req, res) => {
       console.log("Audio URL Upload:", audioUrlPathUpload);
       const cacheKey1 = "allSongs";
       cache.del(cacheKey1);
-      const cacheKey2 = `songsByAlbum-${req.params.albumId}`;
+      const cacheKey2 = "songsByAlbum";
       cache.del(cacheKey2);
       const cacheKey3 = "stats";
       cache.del(cacheKey3); // Delete stats cache
@@ -128,8 +128,9 @@ const allSongs = async (req, res) => {
 }
 const getSongsByAlbum = async (req, res) => {
   try {
-    const cacheKey = `songsByAlbum-${req.params.albumId}`;
+    const cacheKey = "songsByAlbum";
     const cachedData = cache.get(cacheKey);
+    cache.del(cacheKey)
     if(cachedData){
       console.log("Returning from cache");
         return res.status(200).json({success: true, totalSongsInThisAlbum: cachedData.totalSongsInThisAlbum,allSong: cachedData.allSong});
