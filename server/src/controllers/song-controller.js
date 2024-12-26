@@ -130,7 +130,7 @@ const getSongsByAlbum = async (req, res) => {
   try {
     const cacheKey = "songsByAlbum";
     const cachedData = cache.get(cacheKey);
-    cache.del(cacheKey)
+    // cache.del(cacheKey)
     if(cachedData){
       console.log("Returning from cache");
         return res.status(200).json({success: true, totalSongsInThisAlbum: cachedData.totalSongsInThisAlbum,allSong: cachedData.allSong});
