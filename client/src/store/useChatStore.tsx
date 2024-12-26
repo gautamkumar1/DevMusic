@@ -54,7 +54,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       const data = await response.json();
 			set({ users: data.userData });
 		} catch (error: any) {
-			set({ error: error.response.data.message });
+			set({ error: error.response.data?.message });
 		} finally {
 			set({ isLoading: false });
 		}

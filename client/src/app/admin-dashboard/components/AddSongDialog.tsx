@@ -110,51 +110,46 @@ const AddSongDialog = () => {
 
     const handleSubmit = async () => {
         setIsLoading(true);
-
         try {
-            if (!files.audioFiles.length || !files.imageFiles.length) {
+            if (!files.audioFiles[0] || !files.imageFiles[0]) {
                 toast.error("Please upload both audio and image files");
                 return;
             }
-
-            for (let i = 0; i < songs.length; i++) {
-                const formData = new FormData();
-                formData.append("title", songs[i].title || `Track ${i + 1}`);
-                formData.append("artist", songs[i].artist || "Unknown Artist");
-                formData.append("duration", songs[i].duration);
-                if (songs[i].albumId && songs[i].albumId !== "none") {
-                    formData.append("albumId", songs[i].albumId);
-                }
-                formData.append("audioUrl", files.audioFiles[i]);
-                formData.append("imageUrl", files.imageFiles[i] || "");
-
-                const response = await fetch("/api/admin/songCreate", {
-                    method: "POST",
-                    body: formData,
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                });
-
-                const data = await response.json();
-                if (!response.ok) {
-                    toast.warning(data.message);
-                    continue;
-                }
-
-                toast.success(`Song ${songs[i].title} added successfully`);
+     
+            const formData = new FormData();
+            formData.append("title", songs[0].title || "Untitled");
+            formData.append("artist", songs[0].artist || "Unknown Artist");
+            formData.append("duration", songs[0].duration);
+            if (songs[0].albumId && songs[0].albumId !== "none") {
+                formData.append("albumId", songs[0].albumId);
             }
-
+            formData.append("audioUrl", files.audioFiles[0]);
+            formData.append("imageUrl", files.imageFiles[0]);
+     
+            const response = await fetch("/api/admin/songCreate", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+     
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message);
+            }
+     
+            toast.success(`Song ${songs[0].title} added successfully`);
             setFiles({ audioFiles: [], imageFiles: [] });
             setSongs([]);
-            toast.success("All songs added successfully");
-        } catch (error) {
-            toast.error("Failed to add songs");
+            setSongDialogOpen(false);
+            
+        } catch (error:any) {
+            toast.error(error.message || "Failed to add song");
         } finally {
             setIsLoading(false);
         }
-    };
-
+     };
     return (
         <Dialog open={songDialogOpen} onOpenChange={setSongDialogOpen}>
             <DialogTrigger asChild>
