@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef,useState } from "react";
 import UsersList from "./components/UsersList";
 import ChatHeader from "./components/ChatHeader";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -28,10 +28,16 @@ const Chat = () => {
     isConnected,
     initSocket,
   } = useChatStore();
-  const token = localStorage.getItem("token") || "";
-  const decodedToken = jwtDecode<any>(token) || null;
+  const [decodedToken, setDecodedToken] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
+  useEffect(() => {
+    // This ensures the code runs only on the client side
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (token) {
+      const decoded = jwtDecode<any>(token);
+      setDecodedToken(decoded);
+    }
+  }, []);
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
@@ -73,7 +79,7 @@ const Chat = () => {
               <ScrollArea className="flex-1 px-4">
                 <div className="py-4 space-y-4">
                   {messages?.length ? (
-                    messages.map((message) => {
+                    messages.map((message: any) => {
                       const isSender = message.senderId === decodedToken?.id;
                       return (
                         <div
