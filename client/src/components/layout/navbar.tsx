@@ -55,7 +55,7 @@ export const Navbar = () => {
         <div className="bg-gradient-to-tr from-primary via-primary/70 to-primary rounded-lg p-2 mr-2 border border-secondary">
           <Headphones className="w-6 h-6 text-white" />
         </div>
-        <span className="bg-gradient-to-r from-primary to-orange-500 bg-clip-text text-transparent">
+        <span className="text-2xl">
           DevMusic
         </span>
       </Link>
@@ -72,7 +72,7 @@ export const Navbar = () => {
           >
             <Link href="/admin-dashboard" prefetch={true}>
               <Shield className="w-4 h-4 mr-1" />
-              <span className="hidden sm:inline">Admin</span>
+              <span className="hidden sm:inline">Admin Dashboard</span>
             </Link>
           </Button>
         )}
@@ -80,7 +80,7 @@ export const Navbar = () => {
           <Button asChild variant="default" size="sm" className="flex items-center">
             <Link href="/user-dashboard" prefetch={true}>
               <User className="w-4 h-4 mr-1" />
-              <span className="hidden sm:inline">Profile</span>
+              <span className="hidden sm:inline">User Dashboard</span>
             </Link>
           </Button>
         )}

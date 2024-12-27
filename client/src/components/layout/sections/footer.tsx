@@ -1,5 +1,6 @@
+import React from 'react';
 import { Separator } from "@/components/ui/separator";
-import { ChevronsDownIcon } from "lucide-react";
+import { CodeIcon, GithubIcon, TwitterIcon, BookOpenIcon, HeartIcon, CpuIcon } from "lucide-react";
 import Link from "next/link";
 
 export const FooterSection = () => {
@@ -9,101 +10,107 @@ export const FooterSection = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-x-12 gap-y-8">
           <div className="col-span-full xl:col-span-2">
             <Link href="#" className="flex font-bold items-center">
-              <ChevronsDownIcon className="w-9 h-9 mr-2 bg-gradient-to-tr from-primary via-primary/70 to-primary rounded-lg border border-secondary" />
-
+              <CodeIcon className="w-9 h-9 mr-2 bg-gradient-to-tr from-primary via-primary/70 to-primary rounded-lg border border-secondary" />
               <h3 className="text-2xl">DevMusic</h3>
             </Link>
+            <p className="mt-4 text-sm opacity-70">
+              Where code meets melody. Build, customize, and integrate music into your applications.
+            </p>
           </div>
 
           <div className="flex flex-col gap-2">
-            <h3 className="font-bold text-lg">Contact</h3>
+            <h3 className="font-bold text-lg">Developer Tools</h3>
             <div>
-              <Link href="#" className="opacity-60 hover:opacity-100">
-                Github
+              <Link href="#" className="opacity-60 hover:opacity-100 flex items-center gap-2">
+                <CpuIcon className="w-4 h-4" />
+                API Docs
               </Link>
             </div>
-
             <div>
-              <Link href="#" className="opacity-60 hover:opacity-100">
-                Twitter
+              <Link href="#" className="opacity-60 hover:opacity-100 flex items-center gap-2">
+                <BookOpenIcon className="w-4 h-4" />
+                SDK Guide
               </Link>
             </div>
-
             <div>
               <Link href="#" className="opacity-60 hover:opacity-100">
-                Instagram
-              </Link>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <h3 className="font-bold text-lg">Platforms</h3>
-            <div>
-              <Link href="#" className="opacity-60 hover:opacity-100">
-                iOS
-              </Link>
-            </div>
-
-            <div>
-              <Link href="#" className="opacity-60 hover:opacity-100">
-                Android
-              </Link>
-            </div>
-
-            <div>
-              <Link href="#" className="opacity-60 hover:opacity-100">
-                Web
+                Playground
               </Link>
             </div>
           </div>
 
           <div className="flex flex-col gap-2">
-            <h3 className="font-bold text-lg">Help</h3>
+            <h3 className="font-bold text-lg">Resources</h3>
             <div>
               <Link href="#" className="opacity-60 hover:opacity-100">
-                Contact Us
+                Code Examples
               </Link>
             </div>
-
             <div>
               <Link href="#" className="opacity-60 hover:opacity-100">
-                FAQ
+                Best Practices
               </Link>
             </div>
-
             <div>
               <Link href="#" className="opacity-60 hover:opacity-100">
-                Feedback
+                Change Log
               </Link>
             </div>
           </div>
 
           <div className="flex flex-col gap-2">
-            <h3 className="font-bold text-lg">Socials</h3>
+            <h3 className="font-bold text-lg">Community</h3>
             <div>
               <Link href="#" className="opacity-60 hover:opacity-100">
-                Twitch
+                Discord Server
               </Link>
             </div>
-
             <div>
               <Link href="#" className="opacity-60 hover:opacity-100">
-                Discord
+                Stack Overflow
               </Link>
             </div>
-
             <div>
               <Link href="#" className="opacity-60 hover:opacity-100">
-                Dribbble
+                GitHub Discussions
+              </Link>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <h3 className="font-bold text-lg">Open Source</h3>
+            <div>
+              <Link href="#" className="opacity-60 hover:opacity-100">
+                Contribute
+              </Link>
+            </div>
+            <div>
+              <Link href="#" className="opacity-60 hover:opacity-100">
+                Report Issues
+              </Link>
+            </div>
+            <div>
+              <Link href="#" className="opacity-60 hover:opacity-100">
+                Project Roadmap
               </Link>
             </div>
           </div>
         </div>
 
-        <Separator className="my-6" />
-        <section className="">
-          <h3 className="">
-            2024 Designed and developed by
+        <Separator className="my-8" />
+        
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-4">
+            <Link href="https://github.com/gautamkumar1" className="opacity-60 hover:opacity-100">
+              <GithubIcon className="w-5 h-5" />
+            </Link>
+            <Link href="https://x.com/xXGauTamxX_" className="opacity-60 hover:opacity-100">
+              <TwitterIcon className="w-5 h-5" />
+            </Link>
+          </div>
+          
+          <p className="text-sm opacity-70">
+            Made with <HeartIcon className="w-4 h-4 inline mx-1 text-red-500" /> by
             <Link
               target="_blank"
               href="https://github.com/gautamkumar1"
@@ -111,9 +118,11 @@ export const FooterSection = () => {
             >
               Gautam
             </Link>
-          </h3>
-        </section>
+          </p>
+        </div>
       </div>
     </footer>
   );
 };
+
+export default FooterSection;
