@@ -7,8 +7,17 @@ const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 }); // TTL of 1 hou
 const createSong = async (req, res) => {
     try {
     //   console.log(`Request Body: ${JSON.stringify(req.body)}`);
-  
+    
       const { title, artist, albumId, duration } = req.body;
+      const cacheKey1 = "allSongs";
+      cache.del(cacheKey1);
+      const cacheKey2 = `songsByAlbum_${albumId}`;
+      cache.del(cacheKey2);
+      const cacheKey3 = "stats";
+      cache.del(cacheKey3);
+      const cacheKey4 = "allAlbums";
+      cache.del(cacheKey4);
+
       const existingSong = await song.findOne({ title, artist });
       if (existingSong) {
         return res.status(400).json({
@@ -36,14 +45,9 @@ const createSong = async (req, res) => {
         ? await uploadOnCloudinary(audioUrlPath)
         : null;
   
-      console.log("Image URL Upload:", imageUrlUpload);
-      console.log("Audio URL Upload:", audioUrlPathUpload);
-      const cacheKey1 = "allSongs";
-      cache.del(cacheKey1);
-      const cacheKey2 = "songsByAlbum";
-      cache.del(cacheKey2);
-      const cacheKey3 = "stats";
-      cache.del(cacheKey3); // Delete stats cache
+      // console.log("Image URL Upload:", imageUrlUpload);
+      // console.log("Audio URL Upload:", audioUrlPathUpload);
+
       // Create the song document
       const songCreated = await song.create({
         title,
@@ -56,7 +60,7 @@ const createSong = async (req, res) => {
   
       // Fetch the complete saved document
       const fullSong = await song.findById(songCreated._id);
-      console.log("Full Saved Song:", fullSong);
+      // console.log("Full Saved Song:", fullSong);
   
       // Update album if albumId is provided
       if (albumId) {
@@ -109,7 +113,7 @@ const allSongs = async (req, res) => {
     const cachedData = cache.get(cacheKey);
     if(cachedData){
       console.log("Returning from cache");
-        return res.status(200).json({success: true, totalSongs: cachedData.totalSongs,allSong: cachedData.allSong});
+        return res.status(200).json({success: "Returning from cache", totalSongs: cachedData.totalSongs,allSong: cachedData.allSong});
     }
 
     console.log("Returning from database");
@@ -128,14 +132,14 @@ const allSongs = async (req, res) => {
 }
 const getSongsByAlbum = async (req, res) => {
   try {
-    const cacheKey = "songsByAlbum";
+    
+    const {albumId} = req.params;
+    const cacheKey = `songsByAlbum_${albumId}`;
     const cachedData = cache.get(cacheKey);
-    cache.del(cacheKey)
     if(cachedData){
       console.log("Returning from cache");
-        return res.status(200).json({success: true, totalSongsInThisAlbum: cachedData.totalSongsInThisAlbum,allSong: cachedData.allSong});
+        return res.status(200).json({success: "Returning from cache", totalSongsInThisAlbum: cachedData.totalSongsInThisAlbum,allSong: cachedData.allSong});
     }
-    const {albumId} = req.params;
     const allSong = await song.find({albumId}).sort({ createdAt: -1 });
     if(!allSong){
         return res.status(404).json({message: "Song not found for this album"});
@@ -159,7 +163,7 @@ const deleteSongByAlbumId = async (req, res) => {
     }
     const cacheKey1 = "allSongs";
       cache.del(cacheKey1);
-      const cacheKey2 = "songsByAlbum";
+      const cacheKey2 = `songsByAlbum_${albumId}`;
       cache.del(cacheKey2);
     const isDeleted = await song.deleteMany({ albumId });
 
