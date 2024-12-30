@@ -10,6 +10,7 @@ import { Slider } from "./ui/slider";
 import { useMusicPlayer } from "@/app/user-dashboard/components/useMusicPlayer";
 import { jwtDecode } from "jwt-decode";
 import { IconDeviceLaptop, IconHomeBitcoin, IconLogout, IconMessageCircle, IconPlayerPause, IconPlayerPlay, IconPlayerSkipBack, IconPlayerSkipForward, IconTools, IconUserCircle, IconVolume2, IconVolumeOff } from "@tabler/icons-react";
+import { Badge } from "./ui/badge";
 
 const LeftSidebar = () => {
   const [token, setToken] = useState<string | null>(null);
@@ -202,17 +203,20 @@ const LeftSidebar = () => {
               </Link>
               {/* Create Room */}
               <Link
-                href="/create-room"
+                href="#"
                 prefetch={true}
                 className={cn(
                   buttonVariants({
                     variant: "ghost",
-                    className: "w-full justify-start text-white hover:bg-zinc-800",
+                    className: "w-full justify-start text-white hover:bg-zinc-800 relative"
                   })
                 )}
               >
                 <IconTools className="mr-2 w-5 h-5" />
                 <span className="hidden md:inline">Create Room</span>
+                <Badge variant="secondary" className="ml-auto text-xs bg-zinc-800 text-white">
+                  Coming Soon
+                </Badge>
               </Link>
 
               {/* Live Coding */}
