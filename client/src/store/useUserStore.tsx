@@ -53,9 +53,10 @@ const useUserStore = create<UserStore>()(
           form.append("githubLink", formData.githubLink);
           form.append("linkedInLink", formData.linkedInLink);
           form.append("portfolioLink", formData.portfolioLink);
-          form.append("skills", JSON.stringify(formData.skills));
           form.append("fullName", formData.fullName);
-
+          formData.skills.forEach((skill) => {
+            form.append("skills", skill);
+          });
           if (profile_picture) {
             form.append("profile_picture", profile_picture);
           }
