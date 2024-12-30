@@ -1,8 +1,6 @@
 "use client"
 import { use, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { log } from 'node:console'
-
 type LeaderboardEntry = {
   rank: number
   fullName: string

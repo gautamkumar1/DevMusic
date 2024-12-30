@@ -34,13 +34,19 @@ type ProfileResponse = {
   userData: UserData;
   activities: any[];
 };
+type LeaderboardEntry = {
+  rank: number
+  fullName: string
+  totalPlayingTime: number
+}
 
 const ProfilePage = () => {
   const { userId } = useParams<Params>();
   const [profileData, setProfileData] = useState<UserData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [userActivity, setUserActivity] = useState<any[]>([]);
-
+  const [data, setData] = useState<LeaderboardEntry[]>([]);
+  const [userRank, setUserRank] = useState<number | null>(null);
   const getUserData = async () => {
     try {
       const response = await fetch(`/api/user/${userId}`, {
@@ -89,14 +95,36 @@ const ProfilePage = () => {
       toast.error("Failed to fetch user activity.");
     }
   };
+  const fetchLeaderBoardData = async () => {
+    try {
+      const response = await fetch("/api/leaderboard-rank");
+      if (!response.ok) {
+        throw new Error("Failed to fetch leaderboard data");
+      }
+      const responseData = await response.json();
+      setData(responseData.leaderboard)
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  };
 
   useEffect(() => {
     if (userId) {
       console.log(`userId: ${userId}`);
       getUserData();
       getUserActivityData();
+      fetchLeaderBoardData();
     }
   }, [userId]);
+  useEffect(() => {
+    if (profileData && data.length > 0) {
+      const matchingEntry = data.find(
+        (entry) => entry.fullName === profileData.fullName
+      );
+      setUserRank(matchingEntry ? matchingEntry.rank : null);
+    }
+  }, [profileData, data]);
+
   const handleShare = async () => {
     try {
       await navigator.share({
@@ -146,7 +174,7 @@ const ProfilePage = () => {
                   {profileData.role}
                 </span>
                 <span className="bg-orange-700 px-3 py-1 rounded-full text-sm">
-                  Rank #{Math.floor(Math.random() * 100) + 1}
+                {userRank !== null ? `Rank #${userRank}` : "Rank not available"}
                 </span>
               </div>
               <p className="text-orange-200 max-w-2xl">{profileData.bio}</p>
@@ -222,59 +250,6 @@ const ProfilePage = () => {
             <ActivityGraph data={userActivity} />
           </CardContent>
         </Card>
-
-        {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="bg-gray-800 border-gray-700">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2">
-                <Flame className="w-6 h-6 text-orange-500" />
-                <h3 className="text-lg font-semibold mb-2 text-orange-100">Current Streak</h3>
-              </div>
-              <div className="text-3xl font-bold text-orange-500">15 days</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-800 border-gray-700">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-6 h-6 text-orange-500" />
-                <h3 className="text-lg font-semibold mb-2 text-orange-100">Longest Streak</h3>
-              </div>
-              <div className="text-3xl font-bold text-orange-500">42 days</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-800 border-gray-700">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2">
-                <Headphones className="w-6 h-6 text-orange-500" />
-                <h3 className="text-lg font-semibold mb-2 text-orange-100">Listening Time</h3>
-              </div>
-              <div className="text-3xl font-bold text-orange-500">1,234 hrs</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-800 border-gray-700">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2">
-                <Music className="w-6 h-6 text-orange-500" />
-                <h3 className="text-lg font-semibold mb-2 text-orange-100">Top Album</h3>
-              </div>
-              <div className="flex items-center gap-3">
-                <img
-                  src="https://images.unsplash.com/photo-1611339555312-e607c8352fd7?w=400"
-                  alt="Random Access Memories"
-                  className="w-12 h-12 rounded object-cover"
-                />
-                <div>
-                  <div className="font-semibold text-orange-100">Random Access Memories</div>
-                  <div className="text-sm text-orange-400">Daft Punk · 387 plays</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
 
