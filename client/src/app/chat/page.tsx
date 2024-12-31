@@ -100,7 +100,7 @@ const Chat = () => {
                           </Avatar>
                           <div
                             className={`rounded-lg p-3 max-w-[70%] ${
-                              isSender ? "bg-green-500" : "bg-zinc-800"
+                              isSender ? "bg-orange-500" : "bg-zinc-800"
                             }`}
                           >
                             <p className="text-sm break-words">{message.content}</p>

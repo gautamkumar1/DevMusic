@@ -4,53 +4,71 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useChatStore } from "@/store/useChatStore";
 import UsersListSkeleton from "./UsersListSkeleton";
 import { useEffect } from "react";
-
+import { IconUsers } from "@tabler/icons-react";
 
 const UsersList = () => {
-	const { users, selectedUser, isLoading, setSelectedUser, onlineUsers } = useChatStore();
-	useEffect(() => {
-		console.log(`onlineUsers: ${JSON.stringify(onlineUsers)}`);
-	
-	},[onlineUsers]);
-	return (
-		<div className='border-r border-zinc-800'>
-			<div className='flex flex-col h-full'>
-				<ScrollArea className='h-[calc(100vh-280px)]'>
-					<div className='space-y-2 p-4'>
-						{isLoading ? (
-							<UsersListSkeleton />
-						) : (
-							users?.map((user) => (
-								<div
-									key={user._id}
-									onClick={() => setSelectedUser(user)}
-									className={`flex items-center justify-center lg:justify-start gap-3 p-3 
-										rounded-lg cursor-pointer transition-colors
-                    ${selectedUser?._id === user._id ? "bg-zinc-800" : "hover:bg-zinc-800/50"}`}
-								>
-									<div className='relative'>
-										<Avatar className='size-8 md:size-12'>
-											<AvatarImage src={user.profile_picture} />
-											<AvatarFallback>{user.username[0]}</AvatarFallback>
-										</Avatar>
-										{/* online indicator */}
-										<div
-											className={`absolute bottom-0 right-0 h-3 w-3 rounded-full ring-2 ring-zinc-900
-                        ${onlineUsers.has(user._id) ? "bg-green-500" : "bg-zinc-500"}`}
-										/>
-									</div>
+  const { users, selectedUser, isLoading, setSelectedUser, onlineUsers } = useChatStore();
 
-									<div className='flex-1 min-w-0 lg:block hidden'>
-										<span className='font-medium truncate'>{user.username}</span>
-									</div>
-								</div>
-							))
-						)}
-					</div>
-				</ScrollArea>
-			</div>
-		</div>
-	);
+  useEffect(() => {
+    console.log(`onlineUsers: ${JSON.stringify(onlineUsers)}`);
+  }, [onlineUsers]);
+
+  return (
+    <div className="h-full flex flex-col bg-zinc-900/50 backdrop-blur-sm">
+      {/* Header */}
+      <div className="flex items-center px-4 h-14 border-b border-zinc-800/50">
+        <div className="flex items-center gap-2">
+          <IconUsers className="w-5 h-5 text-zinc-400" />
+          <h2 className="font-semibold text-sm text-zinc-100">Users</h2>
+        </div>
+      </div>
+
+      {/* Scrollable user list */}
+      <ScrollArea className="flex-1">
+        <div className="p-2">
+          {isLoading ? (
+            <UsersListSkeleton />
+          ) : (
+            users?.map((user) => (
+              <div
+                key={user._id}
+                onClick={() => setSelectedUser(user)}
+                className={`group relative flex items-center gap-x-3 p-2 rounded-md 
+                  transition-colors cursor-pointer 
+                  ${
+                    selectedUser?._id === user._id
+                      ? "bg-zinc-800"
+                      : "hover:bg-zinc-800/50"
+                  }`}
+              >
+                {/* User Avatar with Online Status */}
+                <div className="relative flex-shrink-0">
+                  <Avatar className="h-9 w-9 border border-zinc-800">
+                    <AvatarImage src={user.profile_picture} alt={user.username} />
+                    <AvatarFallback>{user.username[0]}</AvatarFallback>
+                  </Avatar>
+                  <span
+                    className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-zinc-900 
+                      ${onlineUsers.has(user._id) ? "bg-green-500" : "bg-zinc-500"}`}
+                  />
+                </div>
+
+                {/* User Info */}
+                <div className="min-w-0 flex-1">
+                  <span className="text-sm font-medium text-zinc-100 truncate">
+                    {user.username}
+                  </span>
+                  <p className="mt-0.5 text-xs text-zinc-400">
+                    {onlineUsers.has(user._id) ? "Online" : "Offline"}
+                  </p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </ScrollArea>
+    </div>
+  );
 };
 
 export default UsersList;
