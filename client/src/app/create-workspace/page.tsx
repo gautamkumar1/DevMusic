@@ -21,7 +21,7 @@ const CreateWorkspace = () => {
   
     try {
       // Hardcoded base URL
-      const currentUrl = "http://localhost:3000/liveCoding/";
+      const currentUrl = "https://dev-musiic.vercel.app/liveCoding/";
   
       // Clean up the workspace name and combine with the base URL
       const formattedWorkspaceName = workspaceName.toLowerCase().replace(/\s+/g, '-');
