@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://devmusic-backend.onrender.com/api/:path*", 
+        destination: "http://localhost:3001/api/:path*", 
       },
     ];
   },
