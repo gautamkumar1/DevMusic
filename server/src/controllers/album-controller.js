@@ -4,7 +4,7 @@ const NodeCache = require("node-cache");
 const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 }); // TTL of 1 hour
 const createAlbum = async (req, res) => {
     try {
-        console.log(`req.body: ${JSON.stringify(req.body)}`);
+        // console.log(`req.body: ${JSON.stringify(req.body)}`);
         const { title, artist, releaseYear,language } = req.body;
         let imageUrlPath;
 
@@ -15,7 +15,7 @@ const createAlbum = async (req, res) => {
         ) {
             imageUrlPath = req.files.imageUrl[0].path;
         }
-        console.log(`imageUrlPath: ${imageUrlPath}`);
+        // console.log(`imageUrlPath: ${imageUrlPath}`);
         const imageUrlUpload = await uploadOnCloudinary(imageUrlPath);
         const cacheKey1 = "allAlbums";
         cache.del(cacheKey1);
@@ -64,14 +64,15 @@ const getAllAlbums = async (req, res) => {
 
         const cachedData = cache.get(cacheKey);
         if (cachedData) {
-            console.log("Returning from cache");
+            // console.log("Returning from cache");
             return res.status(200).json({
+                success: "Returning from cache",
                 totalAlbums: cachedData.totalAlbums,
                 albums: cachedData.albums 
             });
         }
 
-        console.log("Returning from database");
+        // console.log("Returning from database");
         const albums = await albumModel.find();
         const totalAlbums = albums.length;
         const albumObject = albums.map(album => album.toObject());
@@ -92,8 +93,8 @@ const getAlbumById = async (req, res) => {
       const cacheKey = `album:${albumId}`;
       const cachedAlbum = cache.get(cacheKey);
       if(cachedAlbum){
-        console.log("Returning from cache");
-        return res.status(200).json({album: cachedAlbum});
+        // console.log("Returning from cache");
+        return res.status(200).json({success: "Returning from cache",album: cachedAlbum});
       }
       const album = await albumModel.findById(albumId);
       if(!album){

@@ -37,18 +37,18 @@ const initializeSocket = (server) => {
 		socket.on("send_message", async (data) => {
 			try {
 				const { senderId, receiverId, content } = data;
-				console.log(`Message from ${senderId} to ${receiverId}: ${content}`);
+				// console.log(`Message from ${senderId} to ${receiverId}: ${content}`);
 				const message = await Message.create({
 					senderId,
 					receiverId,
 					content,
 				});
-				console.log(`Looking for receiverId: ${receiverId} in userSockets`);
-				console.log(`userSockets: ${JSON.stringify([...userSockets])}`);
+				// console.log(`Looking for receiverId: ${receiverId} in userSockets`);
+				// console.log(`userSockets: ${JSON.stringify([...userSockets])}`);
 
 				// send to receiver in realtime, if they're online
 				const receiverSocketId = userSockets.get(receiverId);
-				console.log(`Receiver socket ID: ${receiverSocketId}`);
+				// console.log(`Receiver socket ID: ${receiverSocketId}`);
 				if (receiverSocketId) {
 					io.to(receiverSocketId).emit("receive_message", message);
 				}

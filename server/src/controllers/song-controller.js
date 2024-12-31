@@ -112,11 +112,11 @@ const allSongs = async (req, res) => {
     const cacheKey = "allSongs";
     const cachedData = cache.get(cacheKey);
     if(cachedData){
-      console.log("Returning from cache");
+      // console.log("Returning from cache");
         return res.status(200).json({success: "Returning from cache", totalSongs: cachedData.totalSongs,allSong: cachedData.allSong});
     }
 
-    console.log("Returning from database");
+    // console.log("Returning from database");
 		const allSong = await song.find().sort({ createdAt: -1 });
         if(!allSong){
             return res.status(404).json({message: "Song not found"});
@@ -137,14 +137,14 @@ const getSongsByAlbum = async (req, res) => {
     const cacheKey = `songsByAlbum_${albumId}`;
     const cachedData = cache.get(cacheKey);
     if(cachedData){
-      console.log("Returning from cache");
+      // console.log("Returning from cache");
         return res.status(200).json({success: "Returning from cache", totalSongsInThisAlbum: cachedData.totalSongsInThisAlbum,allSong: cachedData.allSong});
     }
     const allSong = await song.find({albumId}).sort({ createdAt: -1 });
     if(!allSong){
         return res.status(404).json({message: "Song not found for this album"});
     }
-    console.log("Returning from database");
+    // console.log("Returning from database");
     const totalSongsInThisAlbum = allSong.length; 
     const songsObject = allSong.map(song => song.toObject());
     cache.set(cacheKey, {totalSongsInThisAlbum: totalSongsInThisAlbum, allSong: songsObject});

@@ -41,7 +41,7 @@ const register = async (req, res) => {
         ) {
             profile_picturePath = req.files.profile_picture[0].path;
         }
-        console.log(`profile_picturePath: ${profile_picturePath}`);
+        // console.log(`profile_picturePath: ${profile_picturePath}`);
         const profile_pictureUpload = await uploadOnCloudinary(profile_picturePath);
         const cacheKey = "allUsers";
         cache.del(cacheKey);
@@ -58,7 +58,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        console.log(req.body);
+        // console.log(req.body);
         
         const {email, password} = req.body;
         if(!email || !password){
@@ -86,14 +86,14 @@ const getSingleUser = async (req, res) => {
         const cacheKey = `user-${userId}`;
         const cachedData = cache.get(cacheKey);
         if(cachedData){
-            console.log("Returning from cache");
-            return res.status(200).json({message: "User fetched successfully", userData: cachedData});
+            // console.log("Returning from cache");
+            return res.status(200).json({ sucess:"Returning from cache",message: "User fetched successfully", userData: cachedData});
         }
         const user = await User.findById(userId).select("-password");
         if(!user){
             return res.status(400).json({message: "User does not exist"});
         }
-        console.log("Returning from database");
+        // console.log("Returning from database");
         const userObject = user.toObject();
         cache.set(cacheKey, userObject);
         return res.status(200).json({message: "User fetched successfully", userData: userObject});
@@ -109,14 +109,14 @@ const getAllUsers = async (req, res) => {
         const cacheKey = "allUsers";
         const cachedData = cache.get(cacheKey);
         if(cachedData){ 
-            console.log("Returning from cache");
+            // console.log("Returning from cache");
             return res.status(200).json({message: "All users fetched successfully", totalUsers: cachedData.totalUsers, userData: cachedData.userData});
         }
         const users = await User.find().select("-password");
         const totalUsers = users.length;
         const usersObject = users.map(user => user.toObject());
         cache.set(cacheKey, {totalUsers: totalUsers, userData: usersObject});
-        console.log("Returning from database");
+        // console.log("Returning from database");
         return res.status(200).json({message: "All users fetched successfully", totalUsers: totalUsers, userData: usersObject});
     } catch (error) {
         console.log(error);
@@ -132,7 +132,7 @@ const getMessage = async (req, res) => {
         const cacheKey = `messages-${myId}-${userId}`;
         const cachedData = cache.get(cacheKey);
         if(cachedData){
-            console.log("Returning from cache");
+            // console.log("Returning from cache");
             return res.status(200).json({message: "Messages fetched successfully", messages: cachedData});
         }
 		const messages = await Message.find({
@@ -141,7 +141,7 @@ const getMessage = async (req, res) => {
 				{ senderId: myId, receiverId: userId },
 			],
 		}).sort({ createdAt: 1 });
-        console.log("Returning from database");
+        // console.log("Returning from database");
         const messagesObject = messages.map(message => message.toObject()); 
         cache.set(cacheKey, messagesObject);
         return res.status(200).json({message: "Messages fetched successfully", messages: messagesObject});
@@ -157,7 +157,7 @@ const getStats = async (req, res) => {
         const cacheKey = "stats";
         const cachedData = cache.get(cacheKey);
         if(cachedData){
-            console.log("Returning from cache");
+            // console.log("Returning from cache");
             return res.status(200).json({message: "Stats fetched successfully", totalUsers: cachedData.totalUsers, totalSongs: cachedData.totalSongs, totalAlbums: cachedData.totalAlbums});
         }
         const users = await User.find();
@@ -167,7 +167,7 @@ const getStats = async (req, res) => {
         const albums = await Album.find();
         const totalAlbums = albums.length;
         cache.set(cacheKey, {totalUsers: totalUsers, totalSongs: totalSongs, totalAlbums: totalAlbums});
-        console.log("Returning from database");
+        // console.log("Returning from database");
         return res.status(200).json({totalUsers: totalUsers, totalSongs: totalSongs, totalAlbums: totalAlbums});
     } catch (error) {
         console.log(error);
