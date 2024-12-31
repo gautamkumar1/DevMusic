@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Toaster } from "sonner"; // Import Sonner's Toaster
 import { MusicPlayerProvider } from "./user-dashboard/components/useMusicPlayer";
 import ClientWrapper from "./liveCoding/components/ClientWrapper";
-
+import { Analytics } from '@vercel/analytics/next';
 const inter = Inter({ subsets: ["latin"] });
 
 // Metadata configuration for SEO
@@ -35,7 +35,10 @@ export default function RootLayout({
           {/* Main application content */}
           <main className="flex flex-col min-h-screen">
             <MusicPlayerProvider>
-            <ClientWrapper>{children}</ClientWrapper>
+            <ClientWrapper>
+              {children}
+              <Analytics />
+            </ClientWrapper>
             </MusicPlayerProvider>
           </main>
         </ThemeProvider>
