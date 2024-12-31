@@ -6,7 +6,7 @@ const Server = require("socket.io").Server;
 const initializeSocket = (server) => {
 	const io = new Server(server, {
 		cors: {
-			origin: "https://dev-musiic.vercel.app",
+			origin: "http://localhost:3000",
 			credentials: true,
 		},
 	});
