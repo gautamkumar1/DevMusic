@@ -64,7 +64,7 @@ const ProfilePage = () => {
       }
 
       setProfileData(data.userData); 
-      console.log(`profileData: ${JSON.stringify(data.userData)}`);
+      // console.log(`profileData: ${JSON.stringify(data.userData)}`);
     } catch (err: any) {
       console.error(`Error while getting userData: ${err.message}`);
       setError(err.message);
@@ -88,7 +88,7 @@ const ProfilePage = () => {
       }
 
       setUserActivity(data.activities); 
-      console.log(`userActivity: ${JSON.stringify(data.activities)}`);
+      // console.log(`userActivity: ${JSON.stringify(data.activities)}`);
     } catch (err: any) {
       console.error(`Error while getting userActivity: ${err.message}`);
       setError(err.message);
@@ -110,7 +110,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (userId) {
-      console.log(`userId: ${userId}`);
+      // console.log(`userId: ${userId}`);
       getUserData();
       getUserActivityData();
       fetchLeaderBoardData();

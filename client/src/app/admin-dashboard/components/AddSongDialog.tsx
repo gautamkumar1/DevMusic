@@ -42,11 +42,11 @@ const AddSongDialog = () => {
 
     // Extract metadata from the audio file
     const extractMetadata = async (audioFile: File) => {
-        console.log("Extracting metadata from audio file:", audioFile.name);
+        // console.log("Extracting metadata from audio file:", audioFile.name);
 
         try {
             const metadata = await mm.parseBlob(audioFile);
-            console.log("Extracted Metadata:", metadata);
+            // console.log("Extracted Metadata:", metadata);
 
             const title = metadata.common.title || "Unknown Title";
             const artist = metadata.common.artist || "Unknown Artist";

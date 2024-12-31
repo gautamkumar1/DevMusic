@@ -63,7 +63,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 		if (!get().isConnected) {
 			socket.auth = { userId };
 			socket.connect();
-			console.log(`Socket initialized for user: ${userId}`);
+			// console.log(`Socket initialized for user: ${userId}`);
 			socket.emit("user_connected", userId);
 
 			socket.on("users_online", (users: string[]) => {
@@ -129,9 +129,9 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			console.error("Socket is not initialized.");
 			return;
 		}
-		console.log(`receiverId: ${receiverId}`);
+		// console.log(`receiverId: ${receiverId}`);
 		
-		console.log(`Sending message from ${senderId} to ${receiverId}: ${content}`);
+		// console.log(`Sending message from ${senderId} to ${receiverId}: ${content}`);
 
 		socket.emit("send_message", { receiverId, senderId, content });
 	},

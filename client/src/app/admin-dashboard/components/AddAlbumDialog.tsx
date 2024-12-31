@@ -63,7 +63,7 @@ const AddAlbumDialog = () => {
 				return;
 			}
 			
-			console.log(`Album:::: ${data.alubmData}`);
+			// console.log(`Album:::: ${data.alubmData}`);
 			setNewAlbum({
 				title: "",
 				artist: "",

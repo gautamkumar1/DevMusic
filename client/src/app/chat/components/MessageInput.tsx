@@ -13,11 +13,11 @@ const MessageInput = () => {
 
 	const handleSend = () => {
 		if (!selectedUser || !decodedToken || !newMessage) return;
-		console.log(`receiver Id from message input: ${JSON.stringify(selectedUser._id)}`);
-		console.log(`sender Id from message input: ${JSON.stringify(decodedToken.id)}`);
-		console.log(`newMessage: ${JSON.stringify(newMessage)}`);
+		// console.log(`receiver Id from message input: ${JSON.stringify(selectedUser._id)}`);
+		// console.log(`sender Id from message input: ${JSON.stringify(decodedToken.id)}`);
+		// console.log(`newMessage: ${JSON.stringify(newMessage)}`);
 		
-		console.log(`Sending message to ${selectedUser._id}: ${newMessage}`);
+		// console.log(`Sending message to ${selectedUser._id}: ${newMessage}`);
 		sendMessage(selectedUser._id, decodedToken.id, newMessage.trim());
 		setNewMessage("");
 	};

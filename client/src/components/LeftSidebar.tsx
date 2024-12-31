@@ -66,7 +66,7 @@ const LeftSidebar = () => {
       });
 
       if (response.ok) {
-        console.log("Song playing time logged successfully");
+        // console.log("Song playing time logged successfully");
         songEndLogged.current = true;
       } else {
         console.error("Failed to log song playing time");
@@ -128,12 +128,7 @@ const LeftSidebar = () => {
         }),
       });
       const responseData = await response.json();
-      console.log(`Response>>>>> ${responseData}`);
-      if (response.ok) {
-        console.log("Singing activity logged successfully");
-      } else {
-        console.error("Failed to log singing activity");
-      }
+      // console.log(`Response>>>>> ${responseData}`);
     } catch (error) {
       console.error("Error logging singing activity:", error);
     }

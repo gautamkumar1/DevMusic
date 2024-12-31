@@ -58,7 +58,7 @@ export default function RegisterPage() {
     e.preventDefault();
     const updatedFormData = { ...formData, skills: Array.isArray(formData.skills) ? formData.skills : [] };
     updatedFormData.skills = selectedSkills;
-    console.log(`updatedFormData: ${JSON.stringify(updatedFormData)}`);
+    // console.log(`updatedFormData: ${JSON.stringify(updatedFormData)}`);
     
     await registerUser(updatedFormData,profile_picture);
     if(registerSuccess){

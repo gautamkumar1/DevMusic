@@ -52,7 +52,7 @@ const PlaylistDetails = () => {
 
   // Fetch playlist details and songs
   useEffect(() => {
-    console.log(`albumId ${albumId}`);
+    // console.log(`albumId ${albumId}`);
     const fetchDetailsAndSongs = async () => {
       try {
         // Fetch playlist details
