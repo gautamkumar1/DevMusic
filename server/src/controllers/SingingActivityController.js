@@ -1,3 +1,4 @@
+const { leaderboardKey } = require("../cacheKey/cacheKey");
 const SingingActivity = require("../models/SingingActivityModel");
 const songPlayingTimeModel = require("../models/song-playingTime")
 const NodeCache = require("node-cache");
@@ -58,7 +59,7 @@ const SingingActivityGet = async (req, res) => {
 
 const addSongPlayingTime = async (req, res) => {
   try {
-    const cacheKey = "leaderboard";
+    const cacheKey = leaderboardKey;
     cache.del(cacheKey);
     const { userId, songPlayingTime, songId } = req.body;
 
@@ -82,7 +83,7 @@ const addSongPlayingTime = async (req, res) => {
 
 const getLeaderboard = async (req, res) => {
   try {
-    const cacheKey = "leaderboard";
+    const cacheKey = leaderboardKey;
     const cachedLeaderboard = cache.get(cacheKey);
     if (cachedLeaderboard) {
       console.log("Returning cached leaderboard");

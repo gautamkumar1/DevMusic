@@ -1,3 +1,4 @@
+const { getAllAlbumsKey } = require("../cacheKey/cacheKey");
 const albumModel = require("../models/album-model");
 const { uploadOnCloudinary } = require("../utils/cloudinary");
 const NodeCache = require("node-cache");
@@ -17,7 +18,7 @@ const createAlbum = async (req, res) => {
         }
         // console.log(`imageUrlPath: ${imageUrlPath}`);
         const imageUrlUpload = await uploadOnCloudinary(imageUrlPath);
-        const cacheKey1 = "allAlbums";
+        const cacheKey1 = getAllAlbumsKey;
         cache.del(cacheKey1);
         const cacheKey2 = `album:${albumId}`;
         cache.del(cacheKey2);
@@ -45,7 +46,7 @@ const createAlbum = async (req, res) => {
 const deleteAlbum = async (req, res) => {
     try {
         const { albumId } = req.body;
-        const cacheKey1 = "allAlbums";
+        const cacheKey1 = getAllAlbumsKey;
         cache.del(cacheKey1);
         const cacheKey2 = `album:${albumId}`;
         cache.del(cacheKey2);
@@ -60,7 +61,7 @@ const deleteAlbum = async (req, res) => {
 };
 const getAllAlbums = async (req, res) => {
     try {
-        const cacheKey = "allAlbums";
+        const cacheKey = getAllAlbumsKey;
 
         const cachedData = cache.get(cacheKey);
         if (cachedData) {
