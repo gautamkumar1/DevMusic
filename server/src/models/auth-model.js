@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken")
 const userSchema = new mongoose.Schema({
     fullName:{
         type: String,
-        required: true,
+        default: "Please enter your full name"
     },
     username:{
         type: String,
@@ -26,7 +26,8 @@ const userSchema = new mongoose.Schema({
         type: String,
     },
     bio:{
-        type: String
+        type: String,
+        default: "Please enter your bio"
     },
     isBlocked: {
         type: Boolean,
@@ -38,18 +39,23 @@ const userSchema = new mongoose.Schema({
     },
     skills:{
         type: [String],
+        default: []
     },
     role:{
         type: String,
+        default: "Please enter your role"
     },
     githubLink:{
-        type: String
+        type: String,
+        default: "Please enter your github link"
     },
     linkedInLink:{
-        type: String
+        type: String,
+        default: "Please enter your linkedin link"
     },
     portfolioLink:{
-        type: String
+        type: String,
+        default: "Please enter your portfolio link"
     }
     
 },

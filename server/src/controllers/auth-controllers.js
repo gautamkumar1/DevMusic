@@ -10,9 +10,6 @@ const register = async (req, res) => {
     
     try {
         const {username, email, password,bio,isBlocked,isAdmin,skills,linkedInLink,portfolioLink,githubLink,role,fullName} = req.body;
-        if(fullName.length < 3){
-            return res.status(400).json({message: "Full name must be at least 3 characters"});
-        }
         if(username.length < 3){
             return res.status(400).json({message: "Username must be at least 3 characters"});
         }
