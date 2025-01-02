@@ -52,8 +52,8 @@ const ProfilePage = () => {
   const [data, setData] = useState<LeaderboardEntry[]>([]);
   const [userRank, setUserRank] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editFormData, setEditFormData] = useState<Partial<UserData> | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [editFormData, setEditFormData] = useState<Partial<UserData> & { profilePictureFile?: File | null }>({});
   const getUserData = async () => {
     try {
       const response = await fetch(`/api/user/${userId}`, {
@@ -114,54 +114,84 @@ const ProfilePage = () => {
       console.log(error.message);
     }
   };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setEditFormData(prev => ({
+        ...prev,
+        profilePictureFile: file
+      }));
+    }
+  };
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editFormData || !profileData) return;
-
+  
     setIsUpdating(true);
+  
     try {
-      const response = await fetch(`/api/updateProfile/${userId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-        body: JSON.stringify({
-          username: editFormData.username,
-          email: editFormData.email,
-          bio: editFormData.bio,
-          role: editFormData.role,
-          skills: editFormData.skills,
-          linkedInLink: editFormData.linkedInLink,
-          portfolioLink: editFormData.portfolioLink,
-          githubLink: editFormData.githubLink,
-          fullName: editFormData.fullName,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to update profile");
+      const formData = new FormData();
+      
+      // Append text fields
+      formData.append('username', editFormData.username || profileData.username);
+      formData.append('email', editFormData.email || profileData.email);
+      formData.append('bio', editFormData.bio || profileData.bio);
+      formData.append('role', editFormData.role || profileData.role);
+      formData.append('linkedInLink', editFormData.linkedInLink || profileData.linkedInLink);
+      formData.append('portfolioLink', editFormData.portfolioLink || profileData.portfolioLink);
+      formData.append('githubLink', editFormData.githubLink || profileData.githubLink);
+      formData.append('fullName', editFormData.fullName || profileData.fullName);
+  
+      // Fix for skills array - Convert comma-separated string to array
+      if (editFormData.skillsTemp) {
+        const skillsArray = editFormData.skillsTemp
+          .split(',')
+          .map(skill => skill.trim())
+          .filter(Boolean);
+        
+        // Add each skill as a separate entry in formData
+        skillsArray.forEach((skill, index) => {
+          formData.append(`skills[${index}]`, skill);
+        });
+      } else {
+        formData.append('skills', '[]'); // Empty array if no skills
       }
-
-      toast.success("Profile updated successfully!");
+      
+      // Handle file upload
+      if (editFormData.profilePictureFile) {
+        formData.append('profile_picture', editFormData.profilePictureFile);
+      }
+  
+      const response = await fetch(`/api/updateProfile/${userId}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+        body: formData,
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to update profile');
+      }
+  
+      toast.success('Profile updated successfully!');
       setIsEditing(false);
       getUserData(); // Refresh the profile data
     } catch (error: any) {
-      toast.error(error.message || "Failed to update profile");
+      toast.error(error.message || 'Failed to update profile');
     } finally {
       setIsUpdating(false);
     }
   };
-
   useEffect(() => {
     if (profileData && !editFormData) {
       setEditFormData({
         ...profileData,
-      skillsTemp: profileData.skills.join(', '),
+        skillsTemp: profileData.skills.join(', '),
       });
-      
+
     }
 
   }, [profileData]);
@@ -255,9 +285,24 @@ const ProfilePage = () => {
                   </DialogHeader>
                   <form onSubmit={handleEditSubmit} className="space-y-4">
                     <div>
+                      <label className="text-sm">Profile Picture</label>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="bg-gray-700 text-white"
+                      />
+                      {editFormData.profilePictureFile && (
+                        <p className="text-sm text-orange-300 mt-1">
+                          Selected file: {editFormData.profilePictureFile.name}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
                       <label className="text-sm">Full Name</label>
                       <Input
-                        value={editFormData?.fullName || ''}
+                        value={editFormData?.fullName || profileData?.fullName || ''}
                         onChange={(e) =>
                           setEditFormData((prev: any) => ({
                             ...prev,
@@ -270,7 +315,7 @@ const ProfilePage = () => {
                     <div>
                       <label className="text-sm">Username</label>
                       <Input
-                        value={editFormData?.username || ''}
+                        value={editFormData?.username || profileData?.username || ''}
                         onChange={(e) =>
                           setEditFormData((prev: any) => ({
                             ...prev,
@@ -283,7 +328,7 @@ const ProfilePage = () => {
                     <div>
                       <label className="text-sm">Role</label>
                       <Input
-                        value={editFormData?.role || ''}
+                        value={editFormData?.role || profileData?.role || ''}
                         onChange={(e) =>
                           setEditFormData((prev: any) => ({
                             ...prev,
@@ -297,7 +342,7 @@ const ProfilePage = () => {
                       <label className="text-sm">Email</label>
                       <Input
                         type="email"
-                        value={editFormData?.email || ''}
+                        value={editFormData?.email || profileData?.email || ''}
                         onChange={(e) =>
                           setEditFormData((prev: any) => ({
                             ...prev,
@@ -310,7 +355,7 @@ const ProfilePage = () => {
                     <div>
                       <label className="text-sm">Bio</label>
                       <Textarea
-                        value={editFormData?.bio || ''}
+                        value={editFormData?.bio || profileData?.bio || ''}
                         onChange={(e) =>
                           setEditFormData((prev: any) => ({
                             ...prev,
@@ -321,35 +366,35 @@ const ProfilePage = () => {
                       />
                     </div>
                     <div>
-  <label className="text-sm">Skills (comma-separated)</label>
-  <Input
-    value={editFormData?.skillsTemp || ''} // Use a temporary string
-    onChange={(e) =>
-      setEditFormData((prev: any) => ({
-        ...prev,
-        skillsTemp: e.target.value, // Update the temp string
-      }))
-    }
-    onBlur={() =>
-      setEditFormData((prev: any) => ({
-        ...prev,
-        skills: prev.skillsTemp
-          ? prev.skillsTemp
-              .split(',')
-              .map((s: string) => s.trim())
-              .filter(Boolean) // Update the actual skills array on blur
-          : [],
-      }))
-    }
-    placeholder="Enter skills separated by commas"
-    className="bg-gray-700 text-white"
-  />
-</div>
+                      <label className="text-sm">Skills (comma-separated)</label>
+                      <Input
+                        value={editFormData?.skillsTemp || ''} // Use a temporary string
+                        onChange={(e) =>
+                          setEditFormData((prev: any) => ({
+                            ...prev,
+                            skillsTemp: e.target.value, // Update the temp string
+                          }))
+                        }
+                        onBlur={() =>
+                          setEditFormData((prev: any) => ({
+                            ...prev,
+                            skills: prev.skillsTemp
+                              ? prev.skillsTemp
+                                .split(',')
+                                .map((s: string) => s.trim())
+                                .filter(Boolean) // Update the actual skills array on blur
+                              : [],
+                          }))
+                        }
+                        placeholder="Enter skills separated by commas"
+                        className="bg-gray-700 text-white"
+                      />
+                    </div>
 
                     <div>
                       <label className="text-sm">GitHub Link</label>
                       <Input
-                        value={editFormData?.githubLink || ''}
+                        value={editFormData?.githubLink || profileData?.githubLink || ''}
                         onChange={(e) =>
                           setEditFormData((prev: any) => ({
                             ...prev,
@@ -362,7 +407,7 @@ const ProfilePage = () => {
                     <div>
                       <label className="text-sm">LinkedIn Link</label>
                       <Input
-                        value={editFormData?.linkedInLink || ''}
+                        value={editFormData?.linkedInLink || profileData?.linkedInLink || ''}
                         onChange={(e) =>
                           setEditFormData((prev: any) => ({
                             ...prev,
@@ -375,7 +420,7 @@ const ProfilePage = () => {
                     <div>
                       <label className="text-sm">Portfolio Link</label>
                       <Input
-                        value={editFormData?.portfolioLink || ''}
+                        value={editFormData?.portfolioLink || profileData?.portfolioLink || ''}
                         onChange={(e) =>
                           setEditFormData((prev: any) => ({
                             ...prev,
