@@ -18,6 +18,7 @@ export default function RegisterPage() {
     username: "",
     email: "",
     password: "",
+    
   });
   const { isLoading,registerUser,registerSuccess } = useUserStore();
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

@@ -1,6 +1,6 @@
-import { toast } from "sonner";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { toast } from 'sonner';
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface UserFormData {
   username: string;
@@ -13,37 +13,29 @@ interface UserLoginData {
 }
 
 interface UserStore {
-  registerLoading: boolean;
-  loginLoading: boolean;
-  isLoading: boolean; // This now dynamically depends on other states
+  isLoading: boolean;
   error: string | null;
   loginSuccess: boolean;
   registerSuccess: boolean;
   isLoggedIn: boolean;
   isAdmin: boolean;
-  registerUser: (formData: UserFormData) => Promise<void>;
+  registerUser: (formData: UserFormData, profile_picture?: File | null) => Promise<void>;
   loginUser: (loginData: UserLoginData) => Promise<void>;
   clearState: () => void;
 }
 
 const useUserStore = create<UserStore>()(
   persist(
-    (set, get) => ({
-      registerLoading: false,
-      loginLoading: false,
+    (set) => ({
+      isLoading: false,
       error: null,
       loginSuccess: false,
       registerSuccess: false,
       isLoggedIn: false,
       isAdmin: false,
 
-      // Getter for `isLoading`: dependent on other states
-      get isLoading() {
-        return get().registerLoading || get().loginLoading;
-      },
-
-      registerUser: async (formData) => {
-        set({ registerLoading: true, error: null, registerSuccess: false });
+      registerUser: async (formData, profile_picture) => {
+        set({ isLoading: true, error: null, registerSuccess: false });
         try {
           const form = new FormData();
           form.append("username", formData.username);
@@ -57,24 +49,21 @@ const useUserStore = create<UserStore>()(
 
           if (response.ok) {
             const result = await response.json();
-            set({ registerSuccess: true, registerLoading: false });
+            set({ registerSuccess: true, isLoading: false });
             toast.success(result.message);
           } else {
             const error = await response.json();
-            set({ error: error.message, registerLoading: false });
+            set({ error: error.message, isLoading: false });
             toast.warning(error.message);
           }
         } catch (err) {
-          set({
-            error: "Error during registration. Please try again.",
-            registerLoading: false,
-          });
+          set({ error: "Error during registration. Please try again.", isLoading: false });
           toast.error("Error during registration. Please try again.");
         }
       },
 
       loginUser: async (loginData) => {
-        set({ loginLoading: true, error: null, loginSuccess: false });
+        set({ isLoading: true, error: null, loginSuccess: false });
         try {
           const response = await fetch("/api/user/login", {
             method: "POST",
@@ -90,7 +79,7 @@ const useUserStore = create<UserStore>()(
 
             set({
               loginSuccess: true,
-              loginLoading: false,
+              isLoading: false,
               isLoggedIn: true,
               isAdmin,
             });
@@ -98,13 +87,13 @@ const useUserStore = create<UserStore>()(
             toast.success(result.message);
           } else {
             const error = await response.json();
-            set({ error: error.message, loginLoading: false, isLoggedIn: false });
+            set({ error: error.message, isLoading: false, isLoggedIn: false });
             toast.warning(error.message);
           }
         } catch (err) {
           set({
             error: "Error during login. Please try again.",
-            loginLoading: false,
+            isLoading: false,
             isLoggedIn: false,
           });
           toast.error("Error during login. Please try again.");
@@ -113,8 +102,7 @@ const useUserStore = create<UserStore>()(
 
       clearState: () =>
         set({
-          registerLoading: false,
-          loginLoading: false,
+          isLoading: false,
           error: null,
           loginSuccess: false,
           registerSuccess: false,
@@ -125,8 +113,7 @@ const useUserStore = create<UserStore>()(
     {
       name: "user-store",
       partialize: (state) => ({
-        registerLoading: state.registerLoading,
-        loginLoading: state.loginLoading,
+        isLoading: state.isLoading,
         error: state.error,
         loginSuccess: state.loginSuccess,
         registerSuccess: state.registerSuccess,
