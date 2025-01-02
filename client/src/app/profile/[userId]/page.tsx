@@ -1,17 +1,22 @@
 "use client";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { AwaitedReactNode, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Calendar, Flame, Github, Globe, Headphones, Linkedin, Loader2, Music, Share2, Trophy } from "lucide-react";
+import { Calendar, Flame, Github, Globe, Headphones, Linkedin, Loader2, Music, Share2, Trophy, Edit2 } from "lucide-react";
 import ActivityGraph from "../components/ActivityGraph";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
+// ... (keep existing type definitions)
 type Params = {
   userId: string;
 };
 
 type UserData = {
+  skillsTemp?: string; // Add this line
   _id: string;
   role: string;
   username: string;
@@ -39,7 +44,6 @@ type LeaderboardEntry = {
   fullName: string
   totalPlayingTime: number
 }
-
 const ProfilePage = () => {
   const { userId } = useParams<Params>();
   const [profileData, setProfileData] = useState<UserData | null>(null);
@@ -47,6 +51,9 @@ const ProfilePage = () => {
   const [userActivity, setUserActivity] = useState<any[]>([]);
   const [data, setData] = useState<LeaderboardEntry[]>([]);
   const [userRank, setUserRank] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editFormData, setEditFormData] = useState<Partial<UserData> | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
   const getUserData = async () => {
     try {
       const response = await fetch(`/api/user/${userId}`, {
@@ -63,7 +70,7 @@ const ProfilePage = () => {
         return;
       }
 
-      setProfileData(data.userData); 
+      setProfileData(data.userData);
       // console.log(`profileData: ${JSON.stringify(data.userData)}`);
     } catch (err: any) {
       console.error(`Error while getting userData: ${err.message}`);
@@ -87,7 +94,7 @@ const ProfilePage = () => {
         return;
       }
 
-      setUserActivity(data.activities); 
+      setUserActivity(data.activities);
       // console.log(`userActivity: ${JSON.stringify(data.activities)}`);
     } catch (err: any) {
       console.error(`Error while getting userActivity: ${err.message}`);
@@ -107,10 +114,59 @@ const ProfilePage = () => {
       console.log(error.message);
     }
   };
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editFormData || !profileData) return;
+
+    setIsUpdating(true);
+    try {
+      const response = await fetch(`/api/updateProfile/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+        body: JSON.stringify({
+          username: editFormData.username,
+          email: editFormData.email,
+          bio: editFormData.bio,
+          role: editFormData.role,
+          skills: editFormData.skills,
+          linkedInLink: editFormData.linkedInLink,
+          portfolioLink: editFormData.portfolioLink,
+          githubLink: editFormData.githubLink,
+          fullName: editFormData.fullName,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update profile");
+      }
+
+      toast.success("Profile updated successfully!");
+      setIsEditing(false);
+      getUserData(); // Refresh the profile data
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update profile");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   useEffect(() => {
+    if (profileData && !editFormData) {
+      setEditFormData({
+        ...profileData,
+      skillsTemp: profileData.skills.join(', '),
+      });
+      
+    }
+
+  }, [profileData]);
+  useEffect(() => {
     if (userId) {
-      // console.log(`userId: ${userId}`);
       getUserData();
       getUserActivityData();
       fetchLeaderBoardData();
@@ -124,7 +180,6 @@ const ProfilePage = () => {
       setUserRank(matchingEntry ? matchingEntry.rank : null);
     }
   }, [profileData, data]);
-
   const handleShare = async () => {
     try {
       await navigator.share({
@@ -138,13 +193,6 @@ const ProfilePage = () => {
       toast.success("Profile link copied to clipboard!");
     }
   };
-  if (error) {
-    return <p className="text-red-500">Error: {error}</p>;
-  }
-
-  if (!profileData) {
-    return <div className="flex justify-center items-center h-screen"><Loader2 className="animate-spin" /></div>;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-orange-50">
@@ -155,8 +203,8 @@ const ProfilePage = () => {
             {/* Profile Picture */}
             <div className="relative">
               <img
-                src={profileData.profile_picture}
-                alt={profileData.fullName}
+                src={profileData?.profile_picture}
+                alt={profileData?.fullName}
                 className="w-32 h-32 rounded-full border-4 border-orange-500 object-cover"
               />
               <div className="absolute -bottom-2 -right-2 bg-orange-500 rounded-full p-2">
@@ -167,17 +215,17 @@ const ProfilePage = () => {
             {/* Profile Info */}
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-2xl md:text-3xl font-bold mb-2 text-orange-100">
-                {profileData.fullName}
+                {profileData?.fullName}
               </h1>
               <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
                 <span className="bg-orange-600 px-3 py-1 rounded-full text-sm">
-                  {profileData.role}
+                  {profileData?.role}
                 </span>
                 <span className="bg-orange-700 px-3 py-1 rounded-full text-sm">
-                {userRank !== null ? `Rank #${userRank}` : "Rank not available"}
+                  {userRank !== null ? `Rank #${userRank}` : "Rank not available"}
                 </span>
               </div>
-              <p className="text-orange-200 max-w-2xl">{profileData.bio}</p>
+              <p className="text-orange-200 max-w-2xl">{profileData?.bio}</p>
             </div>
 
             {/* Connect Section */}
@@ -189,7 +237,178 @@ const ProfilePage = () => {
                 <Share2 className="w-5 h-5" />
                 Share Profile
               </Button>
-              {profileData.githubLink && (
+
+              <Dialog open={isEditing} onOpenChange={setIsEditing}>
+                <DialogTrigger asChild>
+                  <Button
+                    className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white"
+                  >
+                    <Edit2 className="w-5 h-5" />
+                    Edit Profile
+                  </Button>
+                </DialogTrigger>
+                <DialogContent
+                  className="bg-gray-800 text-orange-50 max-h-[80vh] overflow-y-auto"
+                >
+                  <DialogHeader>
+                    <DialogTitle>Edit Profile</DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleEditSubmit} className="space-y-4">
+                    <div>
+                      <label className="text-sm">Full Name</label>
+                      <Input
+                        value={editFormData?.fullName || ''}
+                        onChange={(e) =>
+                          setEditFormData((prev: any) => ({
+                            ...prev,
+                            fullName: e.target.value,
+                          }))
+                        }
+                        className="bg-gray-700 text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm">Username</label>
+                      <Input
+                        value={editFormData?.username || ''}
+                        onChange={(e) =>
+                          setEditFormData((prev: any) => ({
+                            ...prev,
+                            username: e.target.value,
+                          }))
+                        }
+                        className="bg-gray-700 text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm">Role</label>
+                      <Input
+                        value={editFormData?.role || ''}
+                        onChange={(e) =>
+                          setEditFormData((prev: any) => ({
+                            ...prev,
+                            role: e.target.value,
+                          }))
+                        }
+                        className="bg-gray-700 text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm">Email</label>
+                      <Input
+                        type="email"
+                        value={editFormData?.email || ''}
+                        onChange={(e) =>
+                          setEditFormData((prev: any) => ({
+                            ...prev,
+                            email: e.target.value,
+                          }))
+                        }
+                        className="bg-gray-700 text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm">Bio</label>
+                      <Textarea
+                        value={editFormData?.bio || ''}
+                        onChange={(e) =>
+                          setEditFormData((prev: any) => ({
+                            ...prev,
+                            bio: e.target.value,
+                          }))
+                        }
+                        className="bg-gray-700 text-white"
+                      />
+                    </div>
+                    <div>
+  <label className="text-sm">Skills (comma-separated)</label>
+  <Input
+    value={editFormData?.skillsTemp || ''} // Use a temporary string
+    onChange={(e) =>
+      setEditFormData((prev: any) => ({
+        ...prev,
+        skillsTemp: e.target.value, // Update the temp string
+      }))
+    }
+    onBlur={() =>
+      setEditFormData((prev: any) => ({
+        ...prev,
+        skills: prev.skillsTemp
+          ? prev.skillsTemp
+              .split(',')
+              .map((s: string) => s.trim())
+              .filter(Boolean) // Update the actual skills array on blur
+          : [],
+      }))
+    }
+    placeholder="Enter skills separated by commas"
+    className="bg-gray-700 text-white"
+  />
+</div>
+
+                    <div>
+                      <label className="text-sm">GitHub Link</label>
+                      <Input
+                        value={editFormData?.githubLink || ''}
+                        onChange={(e) =>
+                          setEditFormData((prev: any) => ({
+                            ...prev,
+                            githubLink: e.target.value,
+                          }))
+                        }
+                        className="bg-gray-700 text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm">LinkedIn Link</label>
+                      <Input
+                        value={editFormData?.linkedInLink || ''}
+                        onChange={(e) =>
+                          setEditFormData((prev: any) => ({
+                            ...prev,
+                            linkedInLink: e.target.value,
+                          }))
+                        }
+                        className="bg-gray-700 text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm">Portfolio Link</label>
+                      <Input
+                        value={editFormData?.portfolioLink || ''}
+                        onChange={(e) =>
+                          setEditFormData((prev: any) => ({
+                            ...prev,
+                            portfolioLink: e.target.value,
+                          }))
+                        }
+                        className="bg-gray-700 text-white"
+                      />
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => setIsEditing(false)}
+                        className="text-orange-100 hover:bg-gray-700"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={isUpdating}
+                        className="bg-orange-600 hover:bg-orange-700"
+                      >
+                        {isUpdating ? 'Saving...' : 'Save Changes'}
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+
+              </Dialog>
+
+              {/* ... (keep existing social links) */}
+              {profileData?.githubLink && (
                 <a
                   href={profileData.githubLink}
                   target="_blank"
@@ -200,7 +419,7 @@ const ProfilePage = () => {
                   <span>GitHub</span>
                 </a>
               )}
-              {profileData.linkedInLink && (
+              {profileData?.linkedInLink && (
                 <a
                   href={profileData.linkedInLink}
                   target="_blank"
@@ -211,7 +430,7 @@ const ProfilePage = () => {
                   <span>LinkedIn</span>
                 </a>
               )}
-              {profileData.portfolioLink && (
+              {profileData?.portfolioLink && (
                 <a
                   href={profileData.portfolioLink}
                   target="_blank"
@@ -226,12 +445,11 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Skills Section */}
         <Card className="mb-8 bg-gray-800 border-gray-700">
           <CardContent className="p-6">
             <h2 className="text-xl font-semibold mb-4 text-orange-100">Skills</h2>
             <div className="flex flex-wrap gap-2">
-              {profileData.skills.map((skill, index) => (
+              {profileData?.skills.map((skill: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<AwaitedReactNode> | null | undefined, index: Key | null | undefined) => (
                 <span
                   key={index}
                   className="px-3 py-1 bg-orange-600/20 text-orange-400 rounded-full text-sm"
@@ -243,7 +461,6 @@ const ProfilePage = () => {
           </CardContent>
         </Card>
 
-        {/* Activity Graph */}
         <Card className="mb-8 bg-gray-800 border-gray-700">
           <CardContent className="p-6">
             <h2 className="text-xl font-semibold mb-4 text-orange-100">Activity</h2>
@@ -252,16 +469,7 @@ const ProfilePage = () => {
         </Card>
       </div>
     </div>
-
   );
-}
+};
 
-const Page = () => {
-  return (
-   
-      <ProfilePage />
-    
-  );
-}
-
-export default Page;
+export default ProfilePage;
