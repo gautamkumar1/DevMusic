@@ -171,4 +171,65 @@ const getStats = async (req, res) => {
         return res.status(500).json({message: error.message});
     }
 }
-module.exports = {register,login,getSingleUser,getAllUsers,getMessage,getStats};
+
+const updateProfile = async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { username, email, bio, skills, role,linkedInLink, portfolioLink, githubLink, fullName } = req.body;
+      console.log(`req.body: ${JSON.stringify(req.body)}`);
+      
+      // Validate inputs
+      if (username && username.length < 3) {
+        return res.status(400).json({ message: "Username must be at least 3 characters" });
+      }
+      if (email && (!email.includes("@") || !email.includes("."))) {
+        return res.status(400).json({ message: "Invalid email" });
+      }
+  
+      const updateData = {
+        ...(username && { username }),
+        ...(email && { email }),
+        ...(role && { role }),
+        ...(bio && { bio }),
+        ...(skills && { skills }),
+        ...(linkedInLink && { linkedInLink }),
+        ...(portfolioLink && { portfolioLink }),
+        ...(githubLink && { githubLink }),
+        ...(fullName && { fullName }),
+      };
+  
+      // Handle profile picture upload (if provided)
+      if (req.files && Array.isArray(req.files.profile_picture) && req.files.profile_picture.length > 0) {
+        const profile_picturePath = req.files.profile_picture[0].path;
+        const profile_pictureUpload = await uploadOnCloudinary(profile_picturePath);
+        updateData.profile_picture = profile_pictureUpload;
+      }
+  
+      // Update user data
+      const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true }).select("-password");
+  
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      console.log(`updatedUser: ${updatedUser}`);
+      
+      // Clear cache
+      const cacheKey = "allUsers";
+      cache.del(cacheKey);
+      const cacheKey2 = "stats";
+      cache.del(cacheKey2);
+      const cacheKey3 = `user-${userId}`;
+       cache.del(cacheKey3);
+  
+      return res.status(200).json({
+        message: "Profile updated successfully",
+        userData: updatedUser,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: error.message });
+    }
+  };
+  
+module.exports = {register,login,getSingleUser,getAllUsers,getMessage,getStats,updateProfile};
