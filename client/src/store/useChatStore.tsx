@@ -21,7 +21,7 @@ interface ChatStore {
 	setSelectedUser: (user: User | null) => void;
 }
 
-const baseURL = "https://devmusic-backend.onrender.com";
+const baseURL = "http://localhost:3001";
 
 const socket = io(baseURL, {
 	autoConnect: false, // only connect if user is authenticated
