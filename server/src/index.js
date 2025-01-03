@@ -20,7 +20,7 @@ initializeSocket(socketServer);
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://dev-musiic.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
