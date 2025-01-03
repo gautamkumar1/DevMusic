@@ -6,13 +6,6 @@ interface UserFormData {
   username: string;
   email: string;
   password: string;
-  bio: string;
-  role: string;
-  githubLink: string;
-  linkedInLink: string;
-  portfolioLink: string;
-  skills: string[]; // Changed from "" to string[]
-  fullName: string;
 }
 interface UserLoginData {
   email: string;
@@ -48,18 +41,6 @@ const useUserStore = create<UserStore>()(
           form.append("username", formData.username);
           form.append("email", formData.email);
           form.append("password", formData.password);
-          form.append("bio", formData.bio);
-          form.append("role", formData.role);
-          form.append("githubLink", formData.githubLink);
-          form.append("linkedInLink", formData.linkedInLink);
-          form.append("portfolioLink", formData.portfolioLink);
-          form.append("fullName", formData.fullName);
-          formData.skills.forEach((skill) => {
-            form.append("skills", skill);
-          });
-          if (profile_picture) {
-            form.append("profile_picture", profile_picture);
-          }
 
           const response = await fetch("/api/user/register", {
             method: "POST",

@@ -4,15 +4,13 @@ const Song = require("../models/song-model")
 const Album = require("../models/album-model")
 const { uploadOnCloudinary } = require("../utils/cloudinary");
 const NodeCache = require("node-cache");
+const { getAllStatsKey, getAllUserKey, leaderboardKey } = require("../cacheKey/cacheKey");
 const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 }); // TTL of 1 hour
 const register = async (req, res) => {
     // console.log(`req.body: ${JSON.stringify(req.body)}`);
     
     try {
         const {username, email, password,bio,isBlocked,isAdmin,skills,linkedInLink,portfolioLink,githubLink,role,fullName} = req.body;
-        if(fullName.length < 3){
-            return res.status(400).json({message: "Full name must be at least 3 characters"});
-        }
         if(username.length < 3){
             return res.status(400).json({message: "Username must be at least 3 characters"});
         }
@@ -43,9 +41,9 @@ const register = async (req, res) => {
         }
         // console.log(`profile_picturePath: ${profile_picturePath}`);
         const profile_pictureUpload = await uploadOnCloudinary(profile_picturePath);
-        const cacheKey = "allUsers";
+        const cacheKey = getAllUserKey;
         cache.del(cacheKey);
-        const cacheKey2 = "stats";
+        const cacheKey2 = getAllStatsKey;
         cache.del(cacheKey2);
         const newUser = await User.create({fullName,username, email, password,bio,isBlocked,isAdmin,role,skills,profile_picture: profile_pictureUpload || 'https://via.placeholder.com/300x300',portfolioLink: portfolioLink || 'https://portfolio.com',githubLink: githubLink || 'https://github.com',linkedInLink: linkedInLink || 'https://linkedin.com'});
         const jwtToken = await newUser.generateToken();
@@ -106,11 +104,11 @@ const getSingleUser = async (req, res) => {
 // This is a admin route
 const getAllUsers = async (req, res) => {
     try {
-        const cacheKey = "allUsers";
+        const cacheKey = getAllUserKey;
         const cachedData = cache.get(cacheKey);
         if(cachedData){ 
             // console.log("Returning from cache");
-            return res.status(200).json({message: "All users fetched successfully", totalUsers: cachedData.totalUsers, userData: cachedData.userData});
+            return res.status(200).json({message: "returning from cache", totalUsers: cachedData.totalUsers, userData: cachedData.userData});
         }
         const users = await User.find().select("-password");
         const totalUsers = users.length;
@@ -154,11 +152,12 @@ const getMessage = async (req, res) => {
 
 const getStats = async (req, res) => {
     try {
-        const cacheKey = "stats";
+        const cacheKey = getAllStatsKey;
+        
         const cachedData = cache.get(cacheKey);
         if(cachedData){
             // console.log("Returning from cache");
-            return res.status(200).json({message: "Stats fetched successfully", totalUsers: cachedData.totalUsers, totalSongs: cachedData.totalSongs, totalAlbums: cachedData.totalAlbums});
+            return res.status(200).json({message: "returning from cache", totalUsers: cachedData.totalUsers, totalSongs: cachedData.totalSongs, totalAlbums: cachedData.totalAlbums});
         }
         const users = await User.find();
         const totalUsers = users.length;
@@ -174,4 +173,66 @@ const getStats = async (req, res) => {
         return res.status(500).json({message: error.message});
     }
 }
-module.exports = {register,login,getSingleUser,getAllUsers,getMessage,getStats};
+
+const updateProfile = async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { username, email, bio, skills, role,linkedInLink, portfolioLink, githubLink, fullName } = req.body;
+      console.log(`req.body: ${JSON.stringify(req.body)}`);
+      
+      // Validate inputs
+      if (username && username.length < 3) {
+        return res.status(400).json({ message: "Username must be at least 3 characters" });
+      }
+      if (email && (!email.includes("@") || !email.includes("."))) {
+        return res.status(400).json({ message: "Invalid email" });
+      }
+  
+      const updateData = {
+        ...(username && { username }),
+        ...(email && { email }),
+        ...(role && { role }),
+        ...(bio && { bio }),
+        ...(skills && { skills }),
+        ...(linkedInLink && { linkedInLink }),
+        ...(portfolioLink && { portfolioLink }),
+        ...(githubLink && { githubLink }),
+        ...(fullName && { fullName }),
+      };
+  
+      // Handle profile picture upload (if provided)
+      if (req.files && Array.isArray(req.files.profile_picture) && req.files.profile_picture.length > 0) {
+        const profile_picturePath = req.files.profile_picture[0].path;
+        const profile_pictureUpload = await uploadOnCloudinary(profile_picturePath);
+        updateData.profile_picture = profile_pictureUpload;
+      }
+  
+      // Update user data
+      const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true }).select("-password");
+  
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      console.log(`updatedUser: ${updatedUser}`);
+      
+      // Clear cache
+      const cacheKey = getAllUserKey;
+      cache.del(cacheKey);
+      const cacheKey2 = getAllStatsKey
+      cache.del(cacheKey2);
+      const cacheKey3 = `user-${userId}`;
+       cache.del(cacheKey3);
+       const cacheKey4 = leaderboardKey;
+         cache.del(cacheKey4);
+      return res.status(200).json({
+        message: "Profile updated successfully",
+        userData: updatedUser,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: error.message });
+    }
+};
+  
+module.exports = {register,login,getSingleUser,getAllUsers,getMessage,getStats,updateProfile};

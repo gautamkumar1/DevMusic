@@ -2,6 +2,7 @@ const song = require("../models/song-model");
 const albumModel = require("../models/album-model");
 const { uploadOnCloudinary } = require("../utils/cloudinary");
 const NodeCache = require("node-cache");
+const { getAllStatsKey, getAllSongsKey, getAllAlbumsKey } = require("../cacheKey/cacheKey");
 const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 }); // TTL of 1 hour
 
 const createSong = async (req, res) => {
@@ -9,13 +10,14 @@ const createSong = async (req, res) => {
     //   console.log(`Request Body: ${JSON.stringify(req.body)}`);
     
       const { title, artist, albumId, duration } = req.body;
-      const cacheKey1 = "allSongs";
+      
+      const cacheKey1 = getAllSongsKey;
       cache.del(cacheKey1);
       const cacheKey2 = `songsByAlbum_${albumId}`;
       cache.del(cacheKey2);
-      const cacheKey3 = "stats";
+      const cacheKey3 = getAllStatsKey;
       cache.del(cacheKey3);
-      const cacheKey4 = "allAlbums";
+      const cacheKey4 = getAllAlbumsKey;
       cache.del(cacheKey4);
 
       const existingSong = await song.findOne({ title, artist });
@@ -88,7 +90,7 @@ const deleteSong = async (req, res) => {
       if (!isSongDeleted) {
           return res.status(404).json({ message: "Song not found" });
       }
-      const cacheKey1 = "allSongs";
+      const cacheKey1 = getAllSongsKey;
       cache.del(cacheKey1);
       const cacheKey2 = "songsByAlbum";
       cache.del(cacheKey2);
@@ -109,7 +111,7 @@ const allSongs = async (req, res) => {
     try {
         // -1 = Descending => newest -> oldest
 		// 1 = Ascending => oldest -> newest
-    const cacheKey = "allSongs";
+    const cacheKey = getAllSongsKey;
     const cachedData = cache.get(cacheKey);
     if(cachedData){
       // console.log("Returning from cache");
@@ -161,7 +163,7 @@ const deleteSongByAlbumId = async (req, res) => {
     if (!albumId) {
       return res.status(400).json({ message: "Album ID is required" });
     }
-    const cacheKey1 = "allSongs";
+    const cacheKey1 = getAllSongsKey;
       cache.del(cacheKey1);
       const cacheKey2 = `songsByAlbum_${albumId}`;
       cache.del(cacheKey2);
