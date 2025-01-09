@@ -1,8 +1,8 @@
 
 <div align="center">
   <br />
-    
-  ![Portfolio2Min Image](https://github.com/user-attachments/assets/5b09af92-7826-4d9c-97ec-bed45018fa44)
+
+![devMusic](https://github.com/user-attachments/assets/70b30e4f-e182-4e77-8f53-55c6fe56739a)
 
 
   <br />
@@ -16,6 +16,11 @@
     <img src="https://img.shields.io/badge/-ShadCN%20UI-black?style=for-the-badge&logoColor=white&logo=shadcn&color=4A5568" alt="ShadCN UI" />
     <img src="https://img.shields.io/badge/-Zustand-black?style=for-the-badge&logoColor=white&logo=zustand&color=7851A9" alt="Zustand" />
     <img src="https://img.shields.io/badge/-MongoDB-black?style=for-the-badge&logoColor=white&logo=mongodb&color=47A248" alt="MongoDB" />
+    <img src="https://img.shields.io/badge/-TypeScript-black?style=for-the-badge&logoColor=white&logo=typescript&color=3178C6" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/-Next.js-black?style=for-the-badge&logoColor=white&logo=next.js&color=000000" alt="Next.js" />
+    <img src="https://img.shields.io/badge/-Socket.IO-black?style=for-the-badge&logoColor=white&logo=socket.io&color=010101" alt="Socket.IO" />
+    <img src="https://img.shields.io/badge/-Docker-black?style=for-the-badge&logoColor=white&logo=docker&color=2496ED" alt="Docker" />
+
 
   </div>
 
@@ -26,8 +31,7 @@
 1. 🤖 [Introduction](#introduction)
 2. ⚙️ [Tech Stack](#tech-stack)
 3. 🔋 [Features](#features)
-4. 🤔 [How to Use](#how-to-use)
-5. 🤸 [Quick Start](#quick-start)
+4. 🤸 [Quick Start](#quick-start)
 
 ## <a name="introduction">🤖 Introduction</a>
 # DevMusic 🎵👩‍💻
@@ -91,7 +95,7 @@ git https://github.com/gautamkumar1/DevMusic.git
 
 **Set Up Environment Variables**
 
-Create a new file named `.env` in the root of your project and add the following content:
+Create a new file named `.env` in the server floder of your project and add the following content:
 
 ```env
 PORT=
