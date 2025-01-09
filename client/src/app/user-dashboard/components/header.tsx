@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { IconMenu, IconSearch } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 // Define the Album interface
 interface Album {
@@ -23,6 +24,7 @@ export function Header() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredAlbums, setFilteredAlbums] = useState<Album[]>([]); // Use the Album type here
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
     fetchAlbums();
@@ -40,47 +42,89 @@ export function Header() {
   }, [searchQuery, albums]);
 
   return (
-    <header className="bg-[#18181B] sticky top-0 z-40 w-full">
-      <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
-        <div className="flex gap-6 md:gap-10">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="inline-block font-bold text-white">DevMusic</span>
-          </Link>
-          <nav className="hidden md:flex gap-6">
-            <Link
-              href="#"
-              className="flex items-center text-lg font-semibold text-gray-300 hover:text-white sm:text-sm"
-            >
-              Discover
-            </Link>
-            <Link
-              href="#"
-              className="flex items-center text-lg font-semibold text-gray-300 hover:text-white sm:text-sm"
-            >
-              Library
-            </Link>
-          </nav>
-        </div>
-        <div className="flex flex-1 items-center justify-end space-x-4">
-          <div className="w-full flex-1 md:w-auto md:flex-none">
-            <div className="relative">
-              <IconSearch className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
-              <input
-                type="search"
-                placeholder="Search albums..."
-                className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px] h-9 bg-[#1F1F23] py-2 text-sm text-white placeholder-gray-500 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 rounded-md border border-gray-600"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)} // Update search query
-              />
-            </div>
-          </div>
-          <button className="md:hidden">
-            <IconMenu className="h-6 w-6 text-gray-300" />
-            <span className="sr-only">Toggle menu</span>
+    <header  className="bg-[#18181B] sticky top-0 z-40 w-full border-b border-zinc-800">
+       <div className="container mx-auto px-4">
+  <div className="flex h-16 items-center gap-4">
+    {/* Logo - Shown on all screens when search is closed, hidden on mobile when search is open */}
+    <div
+      className={cn(
+        "flex items-center",
+        isSearchOpen && "hidden sm:flex"
+      )}
+    >
+      <Link href="/" className="flex items-center space-x-2">
+        <span className="text-lg font-bold text-white">DevMusic</span>
+      </Link>
+    </div>
+
+    {/* Search Container */}
+    <div
+      className={cn(
+        "flex items-center ml-auto",
+        isSearchOpen ? "flex-1 sm:flex-initial" : "w-auto"
+      )}
+    >
+      {/* Mobile Search Toggle */}
+      <button
+        className={cn(
+          "sm:hidden p-2 text-gray-400 hover:text-white transition-colors",
+          isSearchOpen && "hidden"
+        )}
+        onClick={() => setIsSearchOpen(true)}
+        aria-label="Open search"
+      >
+        <IconSearch className="h-5 w-5" />
+      </button>
+
+      {/* Search Input */}
+      <div
+        className={cn(
+          "relative",
+          isSearchOpen ? "w-full" : "hidden sm:block"
+        )}
+      >
+        <IconSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <input
+          type="search"
+          placeholder="Search albums..."
+          className={cn(
+            "h-9 rounded-md border border-gray-600 bg-[#1F1F23] py-2",
+            "text-sm text-white placeholder-gray-500",
+            "ring-offset-background focus-visible:outline-none",
+            "focus-visible:ring-2 focus-visible:ring-orange-500",
+            "focus-visible:ring-offset-2 disabled:cursor-not-allowed",
+            "disabled:opacity-50 pl-9",
+            isSearchOpen ? "w-full" : "w-[200px] lg:w-[300px]"
+          )}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+
+        {/* Mobile Close Search Button */}
+        {isSearchOpen && (
+          <button
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-white sm:hidden"
+            onClick={() => setIsSearchOpen(false)}
+            aria-label="Close search"
+          >
+            <span className="text-sm">✕</span>
           </button>
-        </div>
+        )}
       </div>
-      
+    </div>
+
+    {/* Right section - hidden on mobile when search is open */}
+    <div
+      className={cn(
+        "flex items-center gap-4",
+        isSearchOpen && "hidden sm:flex"
+      )}
+    >
+      {/* Add any additional header items here */}
+    </div>
+  </div>
+</div>
+
       {/* Move filtered albums to a separate container with proper z-index and positioning */}
       {searchQuery && (
         <div className="absolute left-0 right-0 bg-zinc-900 border border-zinc-800 rounded-b-lg shadow-lg z-30">

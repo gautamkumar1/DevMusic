@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { Slider } from "./ui/slider";
 import { useMusicPlayer } from "@/app/user-dashboard/components/useMusicPlayer";
 import { jwtDecode } from "jwt-decode";
-import { IconDeviceLaptop, IconHomeBitcoin, IconLogout, IconMessageCircle, IconPlayerPause, IconPlayerPlay, IconPlayerSkipBack, IconPlayerSkipForward, IconTools, IconUserCircle, IconVolume2, IconVolumeOff } from "@tabler/icons-react";
+import { IconDeviceLaptop, IconHomeBitcoin, IconLogout, IconMenu, IconMessageCircle, IconPlayerPause, IconPlayerPlay, IconPlayerSkipBack, IconPlayerSkipForward, IconTools, IconUserCircle, IconUsers, IconVolume2, IconVolumeOff, IconX } from "@tabler/icons-react";
 import { Badge } from "./ui/badge";
 
 const LeftSidebar = () => {
@@ -37,7 +37,14 @@ const LeftSidebar = () => {
   const songEndLogged = useRef<boolean>(false);
   const currentSongRef = useRef<string | null>(null);
   const isProcessing = useRef<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   useEffect(() => {
+    setIsClient(true);
     // Access localStorage only after component mounts
     const storedToken = localStorage.getItem("token");
     setToken(storedToken);
@@ -158,33 +165,59 @@ const LeftSidebar = () => {
   const handleSliderChange = (value: number) => {
     setCurrentTime(value);
   };
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
 
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  if (!isClient) {
+    return null; // Return null on server-side to prevent hydration mismatch
+  }
   return (
-    <div className="h-full flex flex-col gap-2">
-      {/* Navigation menu */}
-      <div className="rounded-lg bg-zinc-900 p-4">
-        <div className="space-y-2">
-          {/* Always show Home */}
-          <Link
-            href="/user-dashboard"
-            prefetch={true}
-            className={cn(
-              buttonVariants({
-                variant: "ghost",
-                className: "w-full justify-start text-white hover:bg-zinc-800",
-              })
-            )}
-          >
-            <IconHomeBitcoin className="mr-2 w-5 h-5" />
-            <span className="hidden md:inline">Home</span>
-          </Link>
-
-          {/* Conditional rendering for logged-in state */}
-          {isLoggedIn && (
-            <>
-              {/* Messages */}
+    <>
+     <div className="h-screen lg:h-auto">
+      {/* Mobile Menu Toggle - Fixed Position */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-zinc-800 lg:hidden"
+        aria-label="Toggle menu"
+      >
+        {isMobileMenuOpen ? (
+          <IconX className="w-6 h-6 text-white" />
+        ) : (
+          <IconMenu className="w-6 h-6 text-white" />
+        )}
+      </button>
+     <div>
+     
+     </div>
+      {/* Sidebar Wrapper */}
+      <aside
+        ref={sidebarRef}
+        className={cn(
+          "fixed lg:relative inset-y-0 left-0 w-64 bg-zinc-950",
+          "transform transition-transform duration-300 ease-in-out",
+          "lg:transform-none lg:translate-x-0",
+          "z-40 overflow-hidden",
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        {/* Scrollable Content Container */}
+        <div className="h-full flex flex-col gap-2 p-4 overflow-y-auto">
+          {/* Navigation Menu */}
+          <nav className="rounded-lg bg-zinc-900 p-4">
+            <div className="space-y-2">
               <Link
-                href="/chat"
+                href="/user-dashboard"
                 prefetch={true}
                 className={cn(
                   buttonVariants({
@@ -192,78 +225,96 @@ const LeftSidebar = () => {
                     className: "w-full justify-start text-white hover:bg-zinc-800",
                   })
                 )}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
-                <IconMessageCircle className="mr-2 w-5 h-5" />
-                <span className="hidden md:inline">Messages</span>
-              </Link>
-              {/* Create Room */}
-              <Link
-                href="#"
-                prefetch={true}
-                className={cn(
-                  buttonVariants({
-                    variant: "ghost",
-                    className: "w-full justify-start text-white hover:bg-zinc-800 relative"
-                  })
-                )}
-              >
-                <IconTools className="mr-2 w-5 h-5" />
-                <span className="hidden md:inline">Create Room</span>
-                <Badge variant="secondary" className="ml-auto text-xs bg-zinc-800 text-white">
-                  Coming Soon
-                </Badge>
+                <IconHomeBitcoin className="mr-2 w-5 h-5" />
+                <span>Home</span>
               </Link>
 
-              {/* Live Coding */}
-              <Link
-                href="/create-workspace"
-                prefetch={true}
-                className={cn(
-                  buttonVariants({
-                    variant: "ghost",
-                    className: "w-full justify-start text-white hover:bg-zinc-800",
-                  })
-                )}
-              >
-                <IconDeviceLaptop className="mr-2 w-5 h-5" />
-                <span className="hidden md:inline">Live Coding</span>
-              </Link>
+              {isLoggedIn && (
+                <>
+                  <Link
+                    href="/chat"
+                    prefetch={true}
+                    className={cn(
+                      buttonVariants({
+                        variant: "ghost",
+                        className: "w-full justify-start text-white hover:bg-zinc-800",
+                      })
+                    )}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <IconMessageCircle className="mr-2 w-5 h-5" />
+                    <span>Messages</span>
+                  </Link>
 
-              {/* View Profile */}
-              <Link
-                href={`/profile/${decodedToken?.id}`}
-                prefetch={true}
-                className={cn(
-                  buttonVariants({
-                    variant: "ghost",
-                    className: "w-full justify-start text-white hover:bg-zinc-800",
-                  })
-                )}
-              >
-                <IconUserCircle className="mr-2 w-5 h-5" />
-                <span className="hidden md:inline">View Profile</span>
-              </Link>
+                  <Link
+                    href="#"
+                    prefetch={true}
+                    className={cn(
+                      buttonVariants({
+                        variant: "ghost",
+                        className: "w-full justify-start text-white hover:bg-zinc-800 relative"
+                      })
+                    )}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <IconTools className="mr-2 w-5 h-5" />
+                    <span>Create Room</span>
+                  </Link>
 
-              {/* Logout */}
-              <button
-                onClick={handleLogout}
-                className={cn(
-                  buttonVariants({
-                    variant: "ghost",
-                    className: "w-full justify-start text-white hover:bg-zinc-800",
-                  })
-                )}
-              >
-                <IconLogout className="mr-2 w-5 h-5" />
-                <span className="hidden md:inline">Logout</span>
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+                  <Link
+                    href="/create-workspace"
+                    prefetch={true}
+                    className={cn(
+                      buttonVariants({
+                        variant: "ghost",
+                        className: "w-full justify-start text-white hover:bg-zinc-800",
+                      })
+                    )}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <IconDeviceLaptop className="mr-2 w-5 h-5" />
+                    <span>Live Coding</span>
+                  </Link>
 
-      {/* Audio Player */}
-      <div className="flex flex-col items-center p-4 space-y-4 bg-zinc-900 rounded-lg shadow-lg">
+                  <Link
+                    href={`/profile/${decodedToken?.id}`}
+                    prefetch={true}
+                    className={cn(
+                      buttonVariants({
+                        variant: "ghost",
+                        className: "w-full justify-start text-white hover:bg-zinc-800",
+                      })
+                    )}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <IconUserCircle className="mr-2 w-5 h-5" />
+                    <span>View Profile</span>
+                  </Link>
+
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={cn(
+                      buttonVariants({
+                        variant: "ghost",
+                        className: "w-full justify-start text-white hover:bg-zinc-800",
+                      })
+                    )}
+                  >
+                    <IconLogout className="mr-2 w-5 h-5" />
+                    <span>Logout</span>
+                  </button>
+                </>
+              )}
+            </div>
+          </nav>
+
+          {/* Music Player Section */}
+          <div className="flex flex-col items-center p-4 space-y-4 bg-zinc-900 rounded-lg shadow-lg">
         {currentSong ? (
           <>
             <img
@@ -346,7 +397,18 @@ const LeftSidebar = () => {
           />
         </div>
       </div>
+        </div>
+      </aside>
+
+      {/* Overlay for mobile */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
     </div>
+    </>
   );
 };
 
